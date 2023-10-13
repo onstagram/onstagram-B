@@ -1,4 +1,4 @@
-package com.onstagram.member.entity;
+package com.onstagram.Member.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

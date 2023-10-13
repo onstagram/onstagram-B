@@ -1,4 +1,4 @@
-package com.onstagram.member.domain;
+package com.onstagram.Member.domain;
 
 import lombok.Builder;
 import lombok.Getter;

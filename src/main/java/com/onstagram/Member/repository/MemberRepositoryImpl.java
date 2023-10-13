@@ -1,6 +1,6 @@
-package com.onstagram.member.repository;
+package com.onstagram.Member.repository;
 
-import com.onstagram.member.entity.MemberEntity;
+import com.onstagram.Member.entity.MemberEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

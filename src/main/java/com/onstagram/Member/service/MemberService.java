@@ -1,6 +1,6 @@
-package com.onstagram.member.service;
+package com.onstagram.Member.service;
 
-import com.onstagram.member.entity.MemberEntity;
+import com.onstagram.Member.entity.MemberEntity;
 
 public interface MemberService {
 

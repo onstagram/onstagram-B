@@ -1,7 +1,8 @@
 package com.onstagram.post.entity;
 
-import com.onstagram.member.entity.MemberEntity;
+import com.onstagram.Member.entity.MemberEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
+@Builder
 @Table(name="post")
 @AllArgsConstructor
 public class PostEntity {

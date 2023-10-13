@@ -1,7 +1,7 @@
-package com.onstagram.member.service;
+package com.onstagram.Member.service;
 
-import com.onstagram.member.entity.MemberEntity;
-import com.onstagram.member.repository.MemberRepository;
+import com.onstagram.Member.entity.MemberEntity;
+import com.onstagram.Member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

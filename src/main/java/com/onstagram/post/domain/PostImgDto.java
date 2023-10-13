@@ -1,10 +1,12 @@
 package com.onstagram.post.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class PostImgDto {
 
     private String uploadImgs; //사진
