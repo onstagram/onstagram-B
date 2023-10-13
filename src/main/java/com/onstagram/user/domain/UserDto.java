@@ -1,5 +1,6 @@
-package com.onstagram.member.domain;
+package com.onstagram.user.domain;
 
+import com.onstagram.user.entity.UserEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,16 +11,16 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-public class MemberDto {
-
-    @NotEmpty(message = "회원이름은 필수")
-    private String userName;
+public class UserDto {
 
     @NotEmpty(message = "이메일은 필수")
     private String email;
 
     @NotEmpty(message = "비밀번호는 필수")
     private String password;
+
+    @NotEmpty(message = "회원이름은 필수")
+    private String userName;
 
     @NotEmpty(message = "핸드폰번호는 필수")
     private String userPhone;
@@ -29,5 +30,14 @@ public class MemberDto {
     private String introduction; //회원 소개
 
     private LocalDate userDate;
+
+    public UserEntity toEntity() {
+        return UserEntity.builder()
+                .email(email)
+                .password(password)
+                .userName(userName)
+                .userPhone(userPhone)
+                .build();
+    }
 
 }

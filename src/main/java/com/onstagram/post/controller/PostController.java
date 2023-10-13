@@ -1,6 +1,6 @@
 package com.onstagram.post.controller;
 
-import com.onstagram.member.entity.MemberEntity;
+import com.onstagram.user.entity.UserEntity;
 import com.onstagram.post.domain.PostDto;
 import com.onstagram.post.domain.PostStatus;
 import com.onstagram.post.entity.PostEntity;
@@ -45,13 +45,13 @@ public class PostController {
         log.info("게시물 작성자 -> " + postDto.getUserId());
 
         //회원아이디 회원 엔터티에 저장
-        MemberEntity memberEntity = new MemberEntity();
-        memberEntity.setId(postDto.getUserId());
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(postDto.getUserId());
 
         PostEntity postEntity = new PostEntity();
 
         postEntity.setCaption(postDto.getCaption()); //게시물 설명
-        postEntity.setMemberEntity(memberEntity); //게시물 작성한 회원 아이디(엔터티로 넣음)
+        postEntity.setUserEntity(userEntity); //게시물 작성한 회원 아이디(엔터티로 넣음)
 
         postService.cratePost(postEntity); //게시물 등록
 

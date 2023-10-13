@@ -1,4 +1,4 @@
-package com.onstagram.member.entity;
+package com.onstagram.user.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,9 +15,9 @@ import java.time.LocalDate;
 @Builder
 @Table(name="member")
 @AllArgsConstructor
-public class MemberEntity {
+public class UserEntity {
 
-    public MemberEntity() {
+    public UserEntity() {
         super();
     }
 
@@ -28,13 +28,13 @@ public class MemberEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String userName;
-
-    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private String userName;
 
     @Column(nullable = false)
     private String userPhone;
