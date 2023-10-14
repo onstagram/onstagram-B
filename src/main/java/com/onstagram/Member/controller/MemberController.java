@@ -29,7 +29,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/join")
+    @PostMapping("/signup") //회원가입
     public ResponseEntity<MemberEntity> join(@Valid @RequestBody MemberDto memberDto, BindingResult result) {
 
         log.info("회원가입 실행");
