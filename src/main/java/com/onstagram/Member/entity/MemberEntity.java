@@ -39,6 +39,8 @@ public class MemberEntity {
     @Column(nullable = false)
     private String userPhone;
 
+    private String roles;
+
     private String userImg;
 
     private String introduction;

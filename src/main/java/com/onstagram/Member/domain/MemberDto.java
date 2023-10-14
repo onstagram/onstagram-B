@@ -24,6 +24,8 @@ public class MemberDto {
     @NotEmpty(message = "핸드폰번호는 필수")
     private String userPhone;
 
+    private String roles; //권한
+
     private String userImg; //회원 이미지
 
     private String introduction; //회원 소개

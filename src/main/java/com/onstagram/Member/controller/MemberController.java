@@ -5,8 +5,11 @@ import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +21,11 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-@RequestMapping("/user")
+//@RequestMapping("/user")
 public class MemberController {
+    
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final MemberService memberService;
 
@@ -29,23 +35,28 @@ public class MemberController {
         log.info("회원가입 실행");
 
         if (result.hasErrors()) {
-            return new ResponseEntity<>(null, HttpStatus.GATEWAY_TIMEOUT);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);//400 에러코드
         }
+        
+        //비밀번호 암호화 시작
+        String password = memberDto.getPassword();
+        String encodedPassword = bCryptPasswordEncoder.encode(password);//기존 비밀번호 암호화
 
         MemberEntity memberEntity = MemberEntity.builder()
                 .userName(memberDto.getUserName())
                 .email(memberDto.getEmail())
-                .password(memberDto.getPassword())
+                .password(encodedPassword)
                 .userPhone(memberDto.getUserPhone())
+                .roles("USER") //USER라는 권한 부여
                 .build();
 
         // 회원 가입 로직을 수행합니다.
         try {
             memberService.join(memberEntity); // MemberService에서 회원 가입 처리
-            return new ResponseEntity<>(memberEntity, HttpStatus.OK);
+            return new ResponseEntity<>(memberEntity, HttpStatus.OK); //200 성공
 
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); //400 에러코드
         }
     }
 
