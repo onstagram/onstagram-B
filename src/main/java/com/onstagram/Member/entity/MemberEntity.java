@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-@Table(name="member")
+@Table(name = "member")
 @AllArgsConstructor
 public class MemberEntity {
 
@@ -28,18 +28,16 @@ public class MemberEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String userName;
-
-    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
-    private String userPhone;
+    private String userName;
 
-    private String roles;
+    @Column(nullable = false)
+    private String userPhone;
 
     private String userImg;
 
@@ -49,7 +47,7 @@ public class MemberEntity {
     private LocalDate userDate;
 
     @PrePersist //엔티티를 만들고 persist(save) 메서드를 호출할 때
-    public void onPrePersist(){
+    public void onPrePersist() {
         this.userDate = LocalDate.now();
     }
 

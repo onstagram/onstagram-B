@@ -21,80 +21,63 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-//@RequestMapping("/user")
+@RequestMapping("/user")
 public class MemberController {
-    
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final MemberService memberService;
 
-    @PostMapping("/signup") //회원가입
-    public ResponseEntity<MemberEntity> join(@Valid @RequestBody MemberDto memberDto, BindingResult result) {
-
-        log.info("회원가입 실행");
+    @PostMapping("signup") //회원가입
+    public HttpStatus join(@Valid @RequestBody MemberDto memberDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);//400 에러코드
+            return HttpStatus.NO_CONTENT; //빈칸에러
         }
-        
-        //비밀번호 암호화 시작
-        String password = memberDto.getPassword();
-        String encodedPassword = bCryptPasswordEncoder.encode(password);//기존 비밀번호 암호화
 
-        MemberEntity memberEntity = MemberEntity.builder()
-                .userName(memberDto.getUserName())
-                .email(memberDto.getEmail())
-                .password(encodedPassword)
-                .userPhone(memberDto.getUserPhone())
-                .roles("USER") //USER라는 권한 부여
-                .build();
+        boolean idCheck = memberService.validateDuplicateMember(memberDto.getEmail()); //아이디 중복체크(true : 중복x , false : 중복)
 
-        // 회원 가입 로직을 수행합니다.
+        if (!idCheck) {
+            return HttpStatus.CONFLICT; //서버 충돌 에러(중복 = 일종의 서버 충돌)
+        }
+
+        MemberEntity memberEntity = memberDto.toEntity();
+
         try {
-            memberService.join(memberEntity); // MemberService에서 회원 가입 처리
-            return new ResponseEntity<>(memberEntity, HttpStatus.OK); //200 성공
-
+            memberService.join(memberEntity); //회원가입 시작
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); //400 에러코드
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST; // 잘못된 요청
         }
+        return HttpStatus.OK;
     }
 
-//    @PostMapping("join")
-//    public JoinStatus join(@Valid @RequestBody UserDto userDto, BindingResult result) {
-//
-//        log.info("회원가입 실행");
-//
-//        if (result.hasErrors()) {
-//            return JoinStatus.builder()
-//                    .status(401)
-//                    .errormessage("입력하지 않은 항목이 있습니다.")
-//                    .build();
-//        }
-//
-//        UserEntity userEntity = UserEntity.builder()
-//                .userName(userDto.getUserName())
-//                .email(userDto.getEmail())
-//                .password(userDto.getPassword())
-//                .userPhone(userDto.getUserPhone())
-//                .build();
-//
-//        // 회원 가입 로직을 수행합니다.
-//        try {
-//            userService.join(userEntity); // MemberService에서 회원 가입 처리
-//            return JoinStatus.builder()
-//                    .status(200)
-//                    .errormessage("회원가입 성공")
-//                    .userEntity(userEntity)
-//                    .build();
-//
-//        } catch (Exception e) {
-//            return JoinStatus.builder()
-//                    .status(500)
-//                    .errormessage("회원가입에 실패했습니다.")
-//                    .build();
-//        }
-//
-//    }
+    @PostMapping("/login") //로그인
+    public ResponseEntity<String> login(@RequestBody MemberEntity memberEntity) {
+
+        try {
+
+            //아이디 체크
+            boolean IdCheck = memberService.validateDuplicateMember(memberEntity.getEmail());
+            if(IdCheck) { //true:아이디 존재x
+                return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+            }
+
+            //로그인 아이디 존재할 경우
+            //비밀번호 체크
+            boolean passwordCheck = memberService.checkPassword(memberEntity);
+
+            if(passwordCheck) {
+                //토큰생성
+                return ResponseEntity.ok("로그인 성공");
+            }
+            else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 중 오류가 발생했습니다.");
+        }
+
+    }
 
 }

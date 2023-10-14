@@ -20,13 +20,17 @@ public class SecurityConfig  {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((auth) -> {
-           auth.antMatchers("/join").permitAll();
-        });
 
-        http.formLogin();
         http.csrf().disable();
-        return http.build();
+        http.authorizeRequests()
+                        .antMatchers("/user/**").hasRole("USER")
+                        .anyRequest().permitAll()
+                        .and()
+                        .formLogin()
+                        .loginPage("/user/login")
+                        .loginProcessingUrl("/user/login")
+                        .defaultSuccessUrl("/");
+            return http.build();
 
     }
 
