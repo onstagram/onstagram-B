@@ -1,6 +1,6 @@
 package com.onstagram.post.entity;
 
-import com.onstagram.user.entity.UserEntity;
+import com.onstagram.member.entity.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +28,7 @@ public class PostEntity {
 
     @ManyToOne//회원(1) : 게시물(many)
     @JoinColumn(name = "USER_ID")
-    private UserEntity userEntity; //회원테이블 참조(외래키)
+    private MemberEntity memberEntity; //회원테이블 참조(외래키)
 
     @Column(nullable = false, columnDefinition = "CLOB")
     private String caption;

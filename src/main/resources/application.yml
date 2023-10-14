@@ -19,7 +19,7 @@ spring:
     generate-ddl: true
     properties:
       hibernate:
-        hbm2ddl.auto: create
+        hbm2ddl.auto: update
         format_sql: true
     database: oracle
     database-platform: org.hibernate.dialect.OracleDialect
@@ -35,6 +35,7 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
 
 server:
   port: 8888

@@ -1,6 +1,6 @@
-package com.onstagram.user.domain;
+package com.onstagram.member.domain;
 
-import com.onstagram.user.entity.UserEntity;
+import com.onstagram.member.entity.MemberEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-public class UserDto {
+public class MemberDto {
 
     @NotEmpty(message = "이메일은 필수")
     private String email;
@@ -31,8 +31,8 @@ public class UserDto {
 
     private LocalDate userDate;
 
-    public UserEntity toEntity() {
-        return UserEntity.builder()
+    public MemberEntity toEntity() {
+        return MemberEntity.builder()
                 .email(email)
                 .password(password)
                 .userName(userName)

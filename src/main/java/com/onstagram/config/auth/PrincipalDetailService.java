@@ -1,7 +1,6 @@
 package com.onstagram.config.auth;
 
-import com.onstagram.user.entity.UserEntity;
-import com.onstagram.user.repository.UserRepository;
+import com.onstagram.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service
 public class PrincipalDetailService implements UserDetailsService {
-private final UserRepository userRepository;
+private final MemberRepository memberRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

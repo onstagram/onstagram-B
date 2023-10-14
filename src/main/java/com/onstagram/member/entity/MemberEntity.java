@@ -1,4 +1,4 @@
-package com.onstagram.user.entity;
+package com.onstagram.member.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,11 +13,11 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-@Table(name="member")
+@Table(name = "member")
 @AllArgsConstructor
-public class UserEntity {
+public class MemberEntity {
 
-    public UserEntity() {
+    public MemberEntity() {
         super();
     }
 
@@ -47,7 +47,7 @@ public class UserEntity {
     private LocalDate userDate;
 
     @PrePersist //엔티티를 만들고 persist(save) 메서드를 호출할 때
-    public void onPrePersist(){
+    public void onPrePersist() {
         this.userDate = LocalDate.now();
     }
 

@@ -1,6 +1,6 @@
-package com.onstagram.user.domain;
+package com.onstagram.member.domain;
 
-import com.onstagram.user.entity.UserEntity;
+import com.onstagram.member.entity.MemberEntity;
 import lombok.*;
 
 @Getter@Setter
@@ -10,6 +10,6 @@ public class JoinStatus {
 
     private int status;
     private String errormessage;
-    private UserEntity userEntity;
+    private MemberEntity memberEntity;
 
 }
