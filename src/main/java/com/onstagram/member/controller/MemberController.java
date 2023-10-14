@@ -1,6 +1,7 @@
 package com.onstagram.member.controller;
 
 import com.onstagram.member.domain.MemberDto;
+import com.onstagram.member.domain.SigninDto;
 import com.onstagram.member.entity.MemberEntity;
 import com.onstagram.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,17 @@ public class MemberController {
         return HttpStatus.OK;
     }
 
+    @PostMapping("/signin")
+    public ResponseEntity<String> validatePassword(@RequestBody SigninDto signinDto) {
+        boolean validatePassword = memberService.checkPassword(signinDto);
+
+        if (validatePassword) {
+            return ResponseEntity.ok("비밀번호가 일치합니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다.");
+        }
+    }
+
     @GetMapping("users") //전체 회원 출력
     public ResponseEntity<List<MemberEntity>> usersList() {
         List<MemberEntity> users = memberService.findUsers();
@@ -53,5 +65,17 @@ public class MemberController {
         }
     }
 
+    @GetMapping("userinfo/{name}") // 이름으로 회원정보출력
+    public ResponseEntity<List<MemberEntity>> userinfo(@PathVariable String name) {
+        List<MemberEntity> usersByName = memberService.findByName(name);
+
+        if (usersByName.isEmpty()) { // 이름에 맞는 데이터가 없다면
+            return new ResponseEntity<>(usersByName, HttpStatus.NOT_FOUND);
+        }
+
+        // 만약 이름에 맞는 데이터가 존재한다면, HttpStatus.OK와 데이터를 반환
+        return new ResponseEntity<>(usersByName, HttpStatus.OK);
+//        return ResponseEntity.status(HttpStatus.OK).body(usersByName);
+    }
 
 }

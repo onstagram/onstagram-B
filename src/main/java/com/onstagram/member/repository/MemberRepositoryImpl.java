@@ -29,4 +29,11 @@ public class MemberRepositoryImpl implements MemberRepository {
                 .setParameter("email", email).getResultList();
     }
 
+    @Override
+    public List<MemberEntity> findByName(String name) {
+        return em.createQuery("select m from MemberEntity  m where m.userName = :name", MemberEntity.class)
+                .setParameter("name", name).getResultList();
+    }
+
+
 }

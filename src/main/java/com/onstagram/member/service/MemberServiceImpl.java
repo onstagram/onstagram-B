@@ -1,5 +1,7 @@
 package com.onstagram.member.service;
 
+import com.onstagram.member.domain.MemberDto;
+import com.onstagram.member.domain.SigninDto;
 import com.onstagram.member.entity.MemberEntity;
 import com.onstagram.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,20 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
+    @Override
+    public boolean checkPassword(SigninDto signinDto) {
+        List<MemberEntity> memberEntities = memberRepository.findbyEmail(signinDto.getEmail());
+
+        if (!memberEntities.isEmpty()) {
+            return bCryptPasswordEncoder.matches(signinDto.getPassword(), memberEntities.get(0).getPassword());
+        } else return false;
+
+    }
+
+    @Override
+    public List<MemberEntity> findByName(String name) {
+        return memberRepository.findByName(name);
+    }
 
 
 }
