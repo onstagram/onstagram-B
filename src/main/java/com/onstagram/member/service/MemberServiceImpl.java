@@ -1,6 +1,7 @@
 package com.onstagram.member.service;
 
 import com.onstagram.member.domain.MemberDto;
+import com.onstagram.member.domain.ModifyDto;
 import com.onstagram.member.domain.SigninDto;
 import com.onstagram.member.entity.MemberEntity;
 import com.onstagram.member.repository.MemberRepository;
@@ -59,6 +60,24 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public List<MemberEntity> findByName(String name) {
         return memberRepository.findByName(name);
+    }
+
+
+
+
+    @Override
+    public void updateUser(String email, ModifyDto modifyDto) {
+        MemberEntity memberEntity = memberRepository.findbyEmail(email).get(0);
+
+        String rawPassword = modifyDto.getPassword();
+        String encodePassword = bCryptPasswordEncoder.encode(rawPassword);
+
+        memberEntity.setPassword(encodePassword);
+        memberEntity.setIntroduction(modifyDto.getIntroduction());
+        memberEntity.setUserImg(modifyDto.getUserImg());
+
+        memberRepository.save(memberEntity);
+
     }
 
 

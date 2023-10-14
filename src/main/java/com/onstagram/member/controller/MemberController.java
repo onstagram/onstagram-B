@@ -1,6 +1,7 @@
 package com.onstagram.member.controller;
 
 import com.onstagram.member.domain.MemberDto;
+import com.onstagram.member.domain.ModifyDto;
 import com.onstagram.member.domain.SigninDto;
 import com.onstagram.member.entity.MemberEntity;
 import com.onstagram.member.service.MemberService;
@@ -76,6 +77,19 @@ public class MemberController {
         // 만약 이름에 맞는 데이터가 존재한다면, HttpStatus.OK와 데이터를 반환
         return new ResponseEntity<>(usersByName, HttpStatus.OK);
 //        return ResponseEntity.status(HttpStatus.OK).body(usersByName);
+    }
+
+    @PutMapping("modify/{email}")
+    public HttpStatus modify(@PathVariable String email, @RequestBody ModifyDto modifyDto){
+
+        try{
+        memberService.updateUser(email,modifyDto);
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return HttpStatus.BAD_REQUEST;
+        }
+        return HttpStatus.OK;
     }
 
 }

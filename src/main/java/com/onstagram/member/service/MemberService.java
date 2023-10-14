@@ -1,6 +1,7 @@
 package com.onstagram.member.service;
 
 import com.onstagram.member.domain.MemberDto;
+import com.onstagram.member.domain.ModifyDto;
 import com.onstagram.member.domain.SigninDto;
 import com.onstagram.member.entity.MemberEntity;
 
@@ -15,5 +16,8 @@ public interface MemberService {
     public boolean validateDuplicateMember(String email);
 
     boolean checkPassword(SigninDto signinDto);
+
     public List<MemberEntity> findByName(String name); //이름으로검색
+
+    void updateUser(String email, ModifyDto modifyDto);
 }
