@@ -1,7 +1,11 @@
 package com.onstagram.post.service;
 
+import com.onstagram.post.domain.PostDto;
+import com.onstagram.post.domain.PostInfoDto;
 import com.onstagram.post.entity.PostEntity;
 import com.onstagram.post.entity.PostImgEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface PostService {
 

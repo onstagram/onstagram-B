@@ -99,5 +99,5 @@ public class PostController {
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK); //200 성공
 
     }
-    
+
 }
