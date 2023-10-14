@@ -23,12 +23,13 @@ public class SecurityConfig  {
 
         http.csrf().disable();
         http.authorizeRequests()
-                        .antMatchers("/user/**").hasRole("USER")
+//                        .antMatchers("/user/**").hasRole("USER")
+                        .antMatchers("/").permitAll()
                         .anyRequest().permitAll()
                         .and()
                         .formLogin()
-                        .loginPage("/user/login")
-                        .loginProcessingUrl("/user/login")
+//                        .loginPage("/user/login")
+//                        .loginProcessingUrl("/user/login")
                         .defaultSuccessUrl("/");
             return http.build();
 
