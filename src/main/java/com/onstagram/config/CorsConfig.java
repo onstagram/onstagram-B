@@ -12,7 +12,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://spectacular-brigadeiros-d9d864.netlify.app/") // 허용할 도메인을 여기에 추가
+                .allowedOrigins("*") // 허용할 도메인을 여기에 추가
                 .allowedHeaders("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE") // 허용할 HTTP 메서드 설정
                 .exposedHeaders("Authorization", "RefreshToken");
