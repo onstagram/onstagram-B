@@ -24,7 +24,7 @@ public class MemberEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
     @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
-//    @Column(name = "user_id")
+    @Column(name = "user_id")
     private Long id;
 
     @Column(nullable = false)

@@ -14,6 +14,7 @@ import java.time.LocalDate;
 //@AllArgsConstructor
 public class LikeDto {
 
+    private Long likeId; //좋아요 아이디
     private Long userId; //좋아요한 회원 아이디(MEMBER 테이블 참조)
     private Long postId; //좋아요한 게시물 아이디(POST 테이블 참조)
     private LocalDate likeDate; //좋아요한 날짜

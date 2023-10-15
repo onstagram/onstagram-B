@@ -1,22 +1,24 @@
 package com.onstagram.Member.controller;
 
 import com.onstagram.Member.domain.MemberDto;
+import com.onstagram.Member.domain.MypageDto;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.service.MemberService;
+import com.onstagram.post.domain.PostDto;
+import com.onstagram.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +27,36 @@ import javax.validation.Valid;
 public class MemberController {
 
     private final MemberService memberService;
+    private final PostService postService;
+
+    @GetMapping("mypage/{id}") //회원아이디
+    public ResponseEntity<MypageDto> mypage(@PathVariable("id") Long id) {
+        log.info("마이페이지 들어옴");
+        try {
+            log.info("회원정보 먼저 가져오기");
+            //회원정보
+            MemberDto memberDto = postService.findById(id);
+
+            log.info("회원정보는 이름 : " + memberDto.getUserName() + ", email : " + memberDto.getEmail());
+            log.info("회원의 게시물 정보 찾기 시작");
+            //게시물 정보(게시물테이블에서 회원아이디로 정보 찾고, 이미지테이블에서 게시물 아이돌 이미지 정보 넣고)
+            List<PostDto> postDtoList = memberService.findById(id); //해당 회원 게시물 목록 리스트(게시물정보 - 게시물 이미지 리스트)
+
+            log.info("찾은 회원의 게시물의 개수" + postDtoList.size());
+
+            MypageDto mypageDto = MypageDto.builder()
+                    .memberDto(memberDto)
+                    .postDtoList(postDtoList)
+                    .postCount((long) postDtoList.size())
+                    .build();
+
+            return new ResponseEntity<>(mypageDto,HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); //실패(400)
+        }
+
+    }
 
     @PostMapping("signup") //회원가입
     public HttpStatus join(@Valid @RequestBody MemberDto memberDto, BindingResult result) {

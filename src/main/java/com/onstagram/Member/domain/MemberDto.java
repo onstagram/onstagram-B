@@ -15,6 +15,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class MemberDto {
 
+    private Long userId;
+
     @NotEmpty(message = "이메일은 필수")
     private String email;
 
