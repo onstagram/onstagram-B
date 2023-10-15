@@ -1,5 +1,6 @@
 package com.onstagram.post.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 public class PostDto {
 
     private Long userId; ////회원테이블 참조(외래키)

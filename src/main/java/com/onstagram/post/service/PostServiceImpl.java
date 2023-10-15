@@ -1,5 +1,6 @@
 package com.onstagram.post.service;
 
+import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.post.entity.PostEntity;
 import com.onstagram.post.entity.PostImgEntity;
 import com.onstagram.post.repository.PostRepository;
@@ -13,15 +14,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+
+    @Override
+    public MemberEntity findById(Long id) {
+        return postRepository.findById(id);
+    }
+
     @Override
     public Long cratePost(PostEntity postEntity) {
         postRepository.createPost(postEntity);
-        return postEntity.getId();
+        return postEntity.getPostId();
     }
 
     @Override// 게시물 이미지 파일 정보 업로드
     public Long uploadImgs(PostImgEntity postImgEntity) {
         postRepository.uploadImgs(postImgEntity);
-        return postImgEntity.getId();
+        return postImgEntity.getImgId();
     }
 }

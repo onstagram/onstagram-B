@@ -1,6 +1,7 @@
 package com.onstagram.Member.domain;
 
 import com.onstagram.Member.entity.MemberEntity;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 public class MemberDto {
 
     @NotEmpty(message = "이메일은 필수")

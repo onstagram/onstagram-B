@@ -24,8 +24,8 @@ public class SecurityConfig  {
         http.csrf().disable();
         http.authorizeRequests()
 //                        .antMatchers("/user/**").hasRole("USER")
-                        .antMatchers("/").permitAll()
-                        .anyRequest().permitAll()
+//                        .antMatchers("/").permitAll()
+                        .anyRequest().permitAll() //어떤 경로에서든지 매칭 성공
                         .and()
                         .formLogin()
 //                        .loginPage("/user/login")
