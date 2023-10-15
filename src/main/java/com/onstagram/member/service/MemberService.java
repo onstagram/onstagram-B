@@ -19,5 +19,7 @@ public interface MemberService {
 
     public List<MemberEntity> findByName(String name); //이름으로검색
 
+    public List<MemberEntity> findByNameWithLike(String name); //이름으로검색 (like)
+
     void updateUser(String email, ModifyDto modifyDto);
 }

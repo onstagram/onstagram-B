@@ -45,7 +45,7 @@ public class MemberController {
         return HttpStatus.OK;
     }
 
-    @PostMapping("/signin")
+    @PostMapping("/signin") //로그인
     public ResponseEntity<String> validatePassword(@RequestBody SigninDto signinDto) {
         boolean validatePassword = memberService.checkPassword(signinDto);
 
@@ -79,7 +79,7 @@ public class MemberController {
 //        return ResponseEntity.status(HttpStatus.OK).body(usersByName);
     }
 
-    @PutMapping("modify/{email}")
+    @PutMapping("modify/{email}") //이메일 받아 회원정보 수정 (이미지 미완성 ver)
     public HttpStatus modify(@PathVariable String email, @RequestBody ModifyDto modifyDto){
 
         try{
@@ -92,4 +92,15 @@ public class MemberController {
         return HttpStatus.OK;
     }
 
+    @GetMapping("search/{name}") // 찾기(oracle like 써서)
+    public ResponseEntity<List<MemberEntity>> searchUser(@PathVariable String name) {
+        List<MemberEntity> usersByName = memberService.findByNameWithLike(name);
+
+        if (usersByName.isEmpty()) { // 이름에 맞는 데이터가 없다면
+            return new ResponseEntity<>(usersByName, HttpStatus.NOT_FOUND);
+        }
+
+        // 만약 이름에 맞는 데이터가 존재한다면, HttpStatus.OK와 데이터를 반환
+        return new ResponseEntity<>(usersByName, HttpStatus.OK);
+    }
 }

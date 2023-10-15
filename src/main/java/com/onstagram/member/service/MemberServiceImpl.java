@@ -62,7 +62,10 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findByName(name);
     }
 
-
+    @Override
+    public List<MemberEntity> findByNameWithLike(String name) {
+        return memberRepository.findByNameWithLike(name);
+    }
 
 
     @Override

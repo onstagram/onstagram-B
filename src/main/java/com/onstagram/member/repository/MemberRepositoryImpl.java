@@ -35,5 +35,11 @@ public class MemberRepositoryImpl implements MemberRepository {
                 .setParameter("name", name).getResultList();
     }
 
+    @Override
+    public List<MemberEntity> findByNameWithLike(String name) {
+        return em.createQuery("select m from MemberEntity m where m.userName like :name", MemberEntity.class)
+                .setParameter("name", "%" + name + "%").getResultList();
+    }
+
 
 }

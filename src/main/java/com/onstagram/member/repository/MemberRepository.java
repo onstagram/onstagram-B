@@ -12,6 +12,7 @@ public interface MemberRepository {
     List<MemberEntity> findbyEmail(String email);
 
     List<MemberEntity> findByName(String name);
+    List<MemberEntity> findByNameWithLike(String name);
 
 
 }
