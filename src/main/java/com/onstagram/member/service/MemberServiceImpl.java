@@ -1,6 +1,5 @@
 package com.onstagram.member.service;
 
-import com.onstagram.member.domain.MemberDto;
 import com.onstagram.member.domain.ModifyDto;
 import com.onstagram.member.domain.SigninDto;
 import com.onstagram.member.entity.MemberEntity;
@@ -9,7 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -67,9 +72,8 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findByNameWithLike(name);
     }
 
-
     @Override
-    public void updateUser(String email, ModifyDto modifyDto) {
+    public void updateUser(String email, @RequestBody ModifyDto modifyDto, @RequestParam("uploadProfileImg") MultipartFile uploadProfileImg) {
         MemberEntity memberEntity = memberRepository.findbyEmail(email).get(0);
 
         String rawPassword = modifyDto.getPassword();
@@ -77,10 +81,28 @@ public class MemberServiceImpl implements MemberService {
 
         memberEntity.setPassword(encodePassword);
         memberEntity.setIntroduction(modifyDto.getIntroduction());
-        memberEntity.setUserImg(modifyDto.getUserImg());
+
+        if (uploadProfileImg != null && !uploadProfileImg.isEmpty()) {
+
+            String uploadPath = "C:/image/profile"; // 이미지를 저장할 디렉토리 경로 설정
+            String originalName = uploadProfileImg.getOriginalFilename(); //선택한 파일명
+
+            String saveName = uploadPath + File.separator + originalName;
+            Path savePath = Paths.get(saveName);
+
+            try {
+                uploadProfileImg.transferTo(savePath);
+            } catch (Exception e) {
+                e.getMessage();
+            }
+
+            memberEntity.setUserImg(originalName);
+        }else{
+            memberEntity.setUserImg("default.jpg");
+        }
+
 
         memberRepository.save(memberEntity);
-
     }
 
 

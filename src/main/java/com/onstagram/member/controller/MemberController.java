@@ -8,9 +8,11 @@ import com.onstagram.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -79,13 +81,13 @@ public class MemberController {
 //        return ResponseEntity.status(HttpStatus.OK).body(usersByName);
     }
 
-    @PutMapping("modify/{email}") //이메일 받아 회원정보 수정 (이미지 미완성 ver)
-    public HttpStatus modify(@PathVariable String email, @RequestBody ModifyDto modifyDto){
+    @PutMapping(value = "modify/{email}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //회원정보 수정
+    public HttpStatus modify(@PathVariable String email, ModifyDto modifyDto, @RequestParam MultipartFile uploadProfileImg) {
 
-        try{
-        memberService.updateUser(email,modifyDto);
+        try {
+            memberService.updateUser(email, modifyDto, uploadProfileImg);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return HttpStatus.BAD_REQUEST;
         }
