@@ -1,5 +1,6 @@
 package com.onstagram.member.service;
 
+import com.onstagram.member.domain.MemberDto;
 import com.onstagram.member.domain.ModifyDto;
 import com.onstagram.member.domain.SigninDto;
 import com.onstagram.member.entity.MemberEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,6 +43,17 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<MemberEntity> findUsers() {
+
+        List<MemberEntity> list = memberRepository.findAll();
+
+        List<MemberDto> dtoList = new ArrayList<>();
+
+        for(MemberEntity memberEntity : list) {
+            dtoList.add(MemberDto.builder()
+                    .email(memberEntity.getEmail())
+                    .build());
+        }
+
         return memberRepository.findAll();
     }
 
@@ -86,8 +99,8 @@ public class MemberServiceImpl implements MemberService {
 
             String uploadPath = "C:/image/profile"; // 이미지를 저장할 디렉토리 경로 설정
             String originalName = uploadProfileImg.getOriginalFilename(); //선택한 파일명
-
             String saveName = uploadPath + File.separator + originalName;
+
             Path savePath = Paths.get(saveName);
 
             try {
@@ -97,13 +110,10 @@ public class MemberServiceImpl implements MemberService {
             }
 
             memberEntity.setUserImg(originalName);
-        }else{
+        } else {
             memberEntity.setUserImg("default.jpg");
         }
 
-
         memberRepository.save(memberEntity);
     }
-
-
 }

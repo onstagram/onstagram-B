@@ -37,6 +37,7 @@ public class MemberDto {
                 .password(password)
                 .userName(userName)
                 .userPhone(userPhone)
+                .userImg("default.jpg")
                 .build();
     }
 

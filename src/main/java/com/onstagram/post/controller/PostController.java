@@ -39,17 +39,11 @@ public class PostController {
     @PostMapping("/register")
     public  PostStatus register(@RequestBody MultipartFile[] uploadImgs, @RequestBody PostDto postDto) {
 
-        System.out.println("게시물 등록 들어옴");
-
-        log.info("게시물 설명 -> " + postDto.getCaption());
-        log.info("게시물 작성자 -> " + postDto.getUserId());
-
         //회원아이디 회원 엔터티에 저장
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.setId(postDto.getUserId());
 
         PostEntity postEntity = new PostEntity();
-
         postEntity.setCaption(postDto.getCaption()); //게시물 설명
         postEntity.setMemberEntity(memberEntity); //게시물 작성한 회원 아이디(엔터티로 넣음)
 
@@ -66,7 +60,6 @@ public class PostController {
             }
 
             String originalName = uploadImg.getOriginalFilename(); //선택한 파일명
-
             String saveName = uploadPath + File.separator + originalName;
             Path savePath = Paths.get(saveName);
 
@@ -95,6 +88,4 @@ public class PostController {
         return new PostStatus(200, "성공", postEntity, list);
 
     }
-
-
 }
