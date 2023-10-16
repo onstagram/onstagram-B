@@ -12,14 +12,6 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
 
-        //프론트 URL
-        registry.addMapping("/**")
-                .allowedOriginPatterns("*")
-                .allowedOrigins("https://glowing-gumption-0c1f0d.netlify.app") // 허용할 도메인을 여기에 추가
-                .allowedHeaders("Origin", "Content-Type", "Accept") // 허용할 요청 헤더 설정
-                .allowedMethods("GET", "POST", "PUT", "DELETE") // 허용할 HTTP 메서드 설정
-                .exposedHeaders("Authorization", "RefreshToken");
-
         //백엔드 URL
         registry.addMapping("/**")
                 .allowedOriginPatterns("*")
