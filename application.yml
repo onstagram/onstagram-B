@@ -8,5 +8,5 @@ cloud:
     stack:
       auto: false
     credentials:
-      secret-key: mM82ptyX6e5FYma2AGIGz6NiPAuoGKYbZZa6K4ZW #gitignore에 넣어서 깃에 업로드 안되게 하기
-      access-key: AKIASUSKUOBKCXRNM7TS
+      secret-key: 
+      access-key:
