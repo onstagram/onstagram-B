@@ -20,19 +20,21 @@ public class SecurityConfig  {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        http.csrf().disable();
-        http.authorizeRequests()
-//                        .antMatchers("/user/**").hasRole("USER")
-//                        .antMatchers("/").permitAll()
-                        .anyRequest().permitAll() //어떤 경로에서든지 매칭 성공
-                        .and()
-                        .formLogin()
-//                        .loginPage("/user/login")
-//                        .loginProcessingUrl("/user/login")
-                        .defaultSuccessUrl("/");
-            return http.build();
-
+        http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/**").permitAll() // 모든 페이지에 대한 권한을 허용
+                .anyRequest().authenticated();
+//        http.csrf().disable();
+//        http.authorizeRequests()
+//                    .antMatchers("/**").permitAll()
+//                    .anyRequest().permitAll() //어떤 경로에서든지 매칭 성공
+//                    .and()
+//                .formLogin()
+//                    .loginPage("/login") // 로그인 페이지 URL
+//                    .loginProcessingUrl("/login") // 로그인 처리 URL
+//                    .defaultSuccessUrl("/") // 로그인 성공 후 리디렉션할 URL
+//                    .permitAll(); // 로그인 페이지에 대한 접근 권한을 모두에게 부여
+        return http.build();
     }
 
 

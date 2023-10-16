@@ -8,8 +8,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-//@Builder
-//@AllArgsConstructor
+@AllArgsConstructor
 @NoArgsConstructor
 public class MemberDto {
 
