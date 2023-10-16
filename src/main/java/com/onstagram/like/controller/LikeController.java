@@ -33,7 +33,7 @@ public class LikeController {
         log.info("좋아요 하기");
 
         LikeEntity likeEntity = LikeEntity.builder()
-                .memberEntity(MemberEntity.builder().id(likeDto.getUserId()).build())
+                .memberEntity(MemberEntity.builder().userId(likeDto.getUserId()).build())
                 .postEntity(PostEntity.builder().postId(likeDto.getPostId()).build())
                 .build();
         try {

@@ -67,7 +67,7 @@ public class PostController {
         log.info("게시물 등록 들어옴");
 
         //회원아이디 회원 엔터티에 저장
-        MemberEntity memberEntity = MemberEntity.builder().id(postDto.getUserId()).build();
+        MemberEntity memberEntity = MemberEntity.builder().userId(postDto.getUserId()).build();
 
         PostEntity postEntity = PostEntity.builder()
                 .caption(postDto.getCaption()) //게시물 설명

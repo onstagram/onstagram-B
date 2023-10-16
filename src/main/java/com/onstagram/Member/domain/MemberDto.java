@@ -1,18 +1,16 @@
 package com.onstagram.Member.domain;
 
 import com.onstagram.Member.entity.MemberEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
+//@Builder
+//@AllArgsConstructor
+@NoArgsConstructor
 public class MemberDto {
 
     private Long userId;
@@ -34,6 +32,18 @@ public class MemberDto {
     private String introduction; //회원 소개
 
     private LocalDate userDate;
+
+    @Builder
+    public MemberDto(MemberEntity memberEntity) {
+        userId = memberEntity.getUserId();
+        email = memberEntity.getEmail();
+        password = memberEntity.getPassword();
+        userName = memberEntity.getUserName();
+        userPhone = memberEntity.getUserPhone();
+        userImg = memberEntity.getUserImg();
+        introduction = memberEntity.getIntroduction();
+        userDate = memberEntity.getUserDate();
+    }
 
     public MemberEntity toEntity() {
         return MemberEntity.builder()

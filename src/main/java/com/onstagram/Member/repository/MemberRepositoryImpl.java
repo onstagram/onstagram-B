@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         em.persist(memberEntity);
     }
 
-    @Override //로그인시 로그인한 회원의 정보 가져오기
+    @Override //로그인한 회원의 정보 + 아이디 중복체크시 사용
     public MemberEntity findOneByEmail(String email) {
         return em.createQuery("select m from MemberEntity  m where m.email = :email", MemberEntity.class)
                 .setParameter("email", email).getSingleResult();
@@ -28,7 +29,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public List<MemberEntity> findbyEmail(String email) {
-        return em.createQuery("select m from MemberEntity  m where m.email = :email", MemberEntity.class)
+        return em.createQuery("select m from MemberEntity m where m.email = :email", MemberEntity.class)
                 .setParameter("email", email).getResultList();
     }
 
@@ -48,6 +49,13 @@ public class MemberRepositoryImpl implements MemberRepository {
     public List<PostImgEntity> findByImgId(Long postId) {
         return em.createQuery("select pi from PostImgEntity pi where pi.postEntity.postId = :id", PostImgEntity.class)
                 .setParameter("id", postId).getResultList();
+    }
+    @Override
+    public Optional<MemberEntity> findByName(String email) {
+        List<MemberEntity> result = em.createQuery("select m from MemberEntity m    where m.email = :email", MemberEntity.class)
+                .setParameter("email", email)
+                .getResultList();
+        return result.stream().findAny();
     }
 
 }

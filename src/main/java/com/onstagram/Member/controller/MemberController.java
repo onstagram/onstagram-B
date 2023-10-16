@@ -11,11 +11,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -29,7 +31,7 @@ public class MemberController {
     private final MemberService memberService;
     private final PostService postService;
 
-    @GetMapping("mypage/{id}") //회원아이디
+    @GetMapping("mypage/{id}") //회원아이디로 해당 회원의 페이지 정보
     public ResponseEntity<MypageDto> mypage(@PathVariable("id") Long id) {
         log.info("마이페이지 들어옴");
         try {
@@ -62,12 +64,14 @@ public class MemberController {
     public HttpStatus join(@Valid @RequestBody MemberDto memberDto, BindingResult result) {
 
         if (result.hasErrors()) {
+            log.info("이곳은 빈칸 에러입니다.");
             return HttpStatus.NO_CONTENT; //빈칸에러
         }
 
         boolean idCheck = memberService.validateDuplicateMember(memberDto.getEmail()); //아이디 중복체크(true : 중복x , false : 중복)
 
         if (!idCheck) {
+            log.info("중복 아이디 존재");
             return HttpStatus.CONFLICT; //서버 충돌 에러(중복 = 일종의 서버 충돌)
         }
 
@@ -77,8 +81,10 @@ public class MemberController {
             memberService.join(memberEntity); //회원가입 시작
         } catch (Exception e) {
             e.printStackTrace();
+            log.info("회원가입 실패");
             return HttpStatus.BAD_REQUEST; // 잘못된 요청
         }
+        log.info("회원가입 성공");
         return HttpStatus.OK;
     }
 
@@ -110,6 +116,25 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 중 오류가 발생했습니다.");
         }
 
+    }
+
+    @GetMapping("modifyForm/{email}")
+    public MemberDto modifyForm(@PathVariable("email") String email) {
+        return memberService.findByEmail(email);
+    }
+
+
+    @PutMapping(value = "modify/{email}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //회원정보 수정
+    public HttpStatus modify(@PathVariable String email, MemberDto memberDto, @RequestParam MultipartFile userImg) {
+
+        try {
+            memberService.updateUser(email, memberDto, userImg);
+            return HttpStatus.OK;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return HttpStatus.BAD_REQUEST;
+        }
     }
 
 }

@@ -20,17 +20,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public MemberDto findById(Long id) {
         MemberEntity memberEntity = postRepository.findById(id);
-        return MemberDto.builder()
-                .userId(memberEntity.getId())
-                .email(memberEntity.getEmail())
-                .password(memberEntity.getPassword())
-                .userPhone(memberEntity.getUserPhone())
-                .userImg(memberEntity.getUserImg())
-                .introduction(memberEntity.getIntroduction())
-                .userDate(memberEntity.getUserDate())
-                .userName(memberEntity.getUserName())
-                .build();
-//        return new ModelMapper().map(memberEntity, MemberDto.class); //memberEntity를 MemberDto로 매핑해서 dto를 리턴
+        return new ModelMapper().map(memberEntity, MemberDto.class); //memberEntity를 MemberDto로 매핑해서 dto를 리턴
     }
 
     @Override

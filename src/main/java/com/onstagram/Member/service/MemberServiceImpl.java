@@ -1,5 +1,6 @@
 package com.onstagram.Member.service;
 
+import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.repository.MemberRepository;
 import com.onstagram.post.domain.PostDto;
@@ -10,9 +11,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -22,7 +28,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Override
+    @Override //회원가입
     public Long join(MemberEntity memberEntity) {
 
         String rawPassword = memberEntity.getPassword();
@@ -31,29 +37,37 @@ public class MemberServiceImpl implements MemberService {
         memberEntity.setPassword(encodePassword);
 
         memberRepository.save(memberEntity); //DB에 회원정보 저장
-        return memberEntity.getId();
+        return memberEntity.getUserId();
     }
 
-    @Override
+    @Override //아이디 중복체크
     public boolean validateDuplicateMember(String email) {
-        List<MemberEntity> findMembers = memberRepository.findbyEmail(email);
-        if (!findMembers.isEmpty()) { // 중복 & 아이디 존재
+//        MemberEntity memberEntity = memberRepository.findByName(email).get();
+//        if (memberEntity != null) { // 중복 & 아이디 존재
+//            return false;
+//        }
+//        return true;
+//
+
+        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByName(email);
+        if (optionalMemberEntity.isPresent()) { // 중복 & 아이디 존재
             return false;
         }
         return true;
+
     }
 
-    @Override
+    @Override //로그인할때 비밀번호 체크(복호화)
     public boolean checkPassword(MemberEntity memberEntity) {
-        MemberEntity memberEntity1 = memberRepository.findOneByEmail(memberEntity.getEmail());
+        List<MemberEntity> memberEntity1 = memberRepository.findbyEmail(memberEntity.getEmail());
         //true : 비밀번호 일치(로그인 성공), false: 비밀번호 불일치
-        return bCryptPasswordEncoder.matches(memberEntity.getPassword(), memberEntity1.getPassword());
+        return bCryptPasswordEncoder.matches(memberEntity.getPassword(), memberEntity1.get(0).getPassword());
     }
 
     @Override//회원 게시물 정보 찾기
     public List<PostDto> findById(Long id) {
 
-        List<PostDto> postDtoList = new ArrayList<>();
+        List<PostDto> postDtoList = new ArrayList<>(); //회원게시물 리스트 생성
 
         List<PostEntity> list = memberRepository.findbyId(id);
 
@@ -92,6 +106,62 @@ public class MemberServiceImpl implements MemberService {
 
         }
         return postDtoList;
+    }
+
+    @Override
+    public MemberDto findByEmail(String email) {
+        MemberEntity memberEntity = memberRepository.findOneByEmail(email);
+//        if (memberEntity == null) {
+//            throw new NullPointerException();
+//        }
+//        MemberDto memberDto = memberRepository.findOneByEmail(email).map(
+//                (MemberEntity memberEntity) -> MemberDto.builder().memberEntity(memberEntity).build()
+//        ).orElseThrow(
+//                () -> new NullPointerException()
+//        );
+        return MemberDto.builder().memberEntity(memberEntity).build();
+    }
+
+    @Override //회원정보 수정
+    public void updateUser(String email, MemberDto memberDto, MultipartFile userImg) {
+
+        MemberEntity memberEntity = memberRepository.findOneByEmail(email);//수정전 회원정보 가져오기
+        String oldImg = memberEntity.getUserImg(); //수정전 이미지 파일명
+        
+        String rawPassword = memberDto.getPassword();
+        String encodePassword = bCryptPasswordEncoder.encode(rawPassword); //비밀번호 암호화
+
+        memberEntity.setPassword(encodePassword); //새로운 회원 비밀번호 저장
+        memberEntity.setIntroduction(memberDto.getIntroduction()); //새로운 자기소개 저장
+
+        String uploadPath = "C:/image/profile"; // 이미지를 저장할 디렉토리 경로 설정
+
+        if (userImg != null) { //이미지 교체 시작
+
+            String originalName = userImg.getOriginalFilename(); //선택한 파일명
+            String saveName = uploadPath + File.separator + originalName;
+
+            if(!saveName.equals(oldImg)) {
+                //기존 old파일 삭제
+                File oldFile = new File(oldImg);
+                oldFile.delete(); //기존 이미지 삭제
+
+                //새로운 이미지 파일 업로드
+                Path savePath = Paths.get(saveName);
+
+                try {
+                    userImg.transferTo(savePath);
+                    memberEntity.setUserImg(saveName);
+                } catch (Exception e) {
+                    e.getMessage();
+                }
+            }
+
+        } else { //이미지가 없을 경우
+            memberEntity.setUserImg(uploadPath + "/default.jpg");
+
+        }
+        memberRepository.save(memberEntity);
     }
 
 }
