@@ -1,14 +1,10 @@
 package com.onstagram.Member.repository;
 
 import com.onstagram.Member.entity.MemberEntity;
-import com.onstagram.post.entity.PostEntity;
-import com.onstagram.post.entity.PostImgEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor

@@ -22,7 +22,7 @@ public class PostDto {
     @NotEmpty(message = "게시물 설명은 작성")
     private String caption; //게시물 설명
     
-    private List<PostImgDto> imgList; //게시물 사진 리스트
+    private String postImg; //게시물 사진 리스트
 
     private Long likeCount; //게시물 좋아요 개수
 

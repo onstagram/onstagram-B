@@ -120,23 +120,23 @@ public class MemberController {
     }
 
 
-    @GetMapping("modifyForm/{email}")//회원정보 수정 페이지
+    @GetMapping("/user/modifyForm/{email}")//회원정보 수정 페이지
     public MemberDto modifyForm(@PathVariable("email") String email) {
         return memberService.findByEmail(email);
     }
 
-
-    @PutMapping(value = "modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //회원정보 수정
-    public HttpStatus modify(MemberDto memberDto, @RequestParam MultipartFile userImg) {
-        log.info("회원수정에 들어왔습니다.");
-        try {
-            memberService.updateUser(memberDto, userImg);
-            return HttpStatus.OK;
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return HttpStatus.BAD_REQUEST;
-        }
-    }
+//    회원수정은 s3후 하기
+//    @PutMapping(value = "/user/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //회원정보 수정
+//    public HttpStatus modify(MemberDto memberDto, @RequestParam MultipartFile userImg) {
+//        log.info("회원수정에 들어왔습니다.");
+//        try {
+//            memberService.updateUser(memberDto, userImg);
+//            return HttpStatus.OK;
+//
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//            return HttpStatus.BAD_REQUEST;
+//        }
+//    }
 
 }

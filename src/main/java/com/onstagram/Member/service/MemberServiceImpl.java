@@ -3,22 +3,10 @@ package com.onstagram.Member.service;
 import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.repository.MemberRepository;
-import com.onstagram.post.domain.PostDto;
-import com.onstagram.post.domain.PostImgDto;
-import com.onstagram.post.entity.PostEntity;
-import com.onstagram.post.entity.PostImgEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -71,48 +59,55 @@ public class MemberServiceImpl implements MemberService {
         return MemberDto.builder().memberEntity(memberEntity).build();
     }
 
-    @Override //회원정보 수정
-    public void updateUser(MemberDto memberDto, MultipartFile userImg) {
-
-        MemberEntity memberEntity = memberRepository.findOneByEmail(memberDto.getEmail());//수정전 회원정보 가져오기
-        String oldImg = memberEntity.getUserImg(); //수정전 이미지 파일명
-
-        String rawPassword = memberDto.getPassword();
-        String encodePassword = bCryptPasswordEncoder.encode(rawPassword); //비밀번호 암호화
-
-        memberEntity.setPassword(encodePassword); //새로운 회원 비밀번호 저장
-        memberEntity.setIntroduction(memberDto.getIntroduction()); //새로운 자기소개 저장
-
-        String uploadPath = "C:/image/profile"; // 이미지를 저장할 디렉토리 경로 설정
-
-        //여기부터 수정하기
-        if (userImg != null) { //이미지 교체 시작
-
-            String originalName = userImg.getOriginalFilename(); //선택한 파일명
-            String saveName = uploadPath + File.separator + originalName;
-
-            if(!saveName.equals(oldImg)) {
-                //기존 old파일 삭제
-                File oldFile = new File(oldImg);
-                oldFile.delete(); //기존 이미지 삭제
-
-                //새로운 이미지 파일 업로드
-                Path savePath = Paths.get(saveName);
-
-                try {
-                    userImg.transferTo(savePath);
-                    memberEntity.setUserImg(saveName);
-                } catch (Exception e) {
-                    e.getMessage();
-                }
-            }
-
-        } else { //이미지가 없을 경우
-            memberEntity.setUserImg(uploadPath + "/default.jpg");
-
-        }
-        memberRepository.save(memberEntity);
-    }
+//    @Override //회원정보 수정
+//    public void updateUser(MemberDto memberDto, MultipartFile userImg) {
+//
+//        MemberEntity memberEntity = memberRepository.findOneByEmail(memberDto.getEmail());//수정전 회원정보 가져오기
+//        String oldImg = memberEntity.getUserImg(); //수정전 이미지 파일명
+//
+//        String rawPassword = memberDto.getPassword();
+//        String encodePassword = bCryptPasswordEncoder.encode(rawPassword); //비밀번호 암호화
+//
+//        memberEntity.setPassword(encodePassword); //새로운 회원 비밀번호 저장
+//        memberEntity.setIntroduction(memberDto.getIntroduction()); //새로운 자기소개 저장
+//
+//        String uploadPath = "C:/image/profile"; // 이미지를 저장할 디렉토리 경로 설정 --> 추후 S3로 변경
+//
+//        String originalName = userImg.getOriginalFilename(); //선택한 파일명
+//        String saveName = uploadPath + File.separator + originalName;
+//        System.out.println("saveName : " + saveName);
+//
+//        if(originalName.equals("default")) { //이미지 삭제해서 기본이미지 설정
+//            memberEntity.setUserImg("defalut.jpg");
+//        } else {
+//            if(!originalName.equals(oldImg)) {
+//
+//            }
+//        }
+//
+//
+//            if(!saveName.equals(oldImg)) {
+//                //기존 old파일 삭제
+//                File oldFile = new File(oldImg);
+//                oldFile.delete(); //기존 이미지 삭제
+//
+//                //새로운 이미지 파일 업로드
+//                Path savePath = Paths.get(saveName);
+//
+//                try {
+//                    userImg.transferTo(savePath);
+//                    memberEntity.setUserImg(saveName);
+//                } catch (Exception e) {
+//                    e.getMessage();
+//                }
+//            }
+//
+//        } else { //이미지가 없을 경우
+//            memberEntity.setUserImg(uploadPath + "/default.jpg");
+//
+//        }
+//        memberRepository.save(memberEntity);
+//    }
 
 //    @Override//회원 게시물 정보 찾기
 //    public List<PostDto> findById(Long id) {

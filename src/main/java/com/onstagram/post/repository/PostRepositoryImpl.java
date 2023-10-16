@@ -1,9 +1,7 @@
 package com.onstagram.post.repository;//package com.onstagram.member.repository;
 
-import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.post.entity.PostEntity;
-import com.onstagram.post.entity.PostImgEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -26,8 +24,4 @@ public class PostRepositoryImpl implements PostRepository {
         em.persist(postEntity); //게시물 등록
     }
 
-    @Override // 게시물 이미지 파일 정보 업로드
-    public void uploadImgs(PostImgEntity postImgEntity) {
-        em.persist(postImgEntity);
-    }
 }

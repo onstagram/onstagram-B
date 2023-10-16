@@ -25,7 +25,6 @@ public class PostEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_sequence")
     @SequenceGenerator(name = "post_sequence", sequenceName = "post_sequence", allocationSize = 1)
-//    @Column(name="post_id")
     private Long postId;
 
     @ManyToOne//회원(1) : 게시물(many)
@@ -34,6 +33,9 @@ public class PostEntity {
 
     @Column(nullable = false, columnDefinition = "CLOB")
     private String caption;
+
+    @Column(nullable = false)
+    private String postImg;
 
     @CreatedDate
     private LocalDate postDate;
