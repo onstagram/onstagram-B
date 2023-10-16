@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-@RequestMapping("/user")
+//@RequestMapping("/user")
 public class MemberController {
 
     private final MemberService memberService;
