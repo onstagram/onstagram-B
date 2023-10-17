@@ -1,9 +1,15 @@
 package com.onstagram.post.controller;
 
 import com.onstagram.Member.domain.MemberDetail;
+import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.entity.MemberEntity;
+import com.onstagram.Member.service.MemberService;
+import com.onstagram.comment.domain.CommentDto;
+import com.onstagram.comment.entity.CommentEntity;
+import com.onstagram.comment.service.CommentService;
 import com.onstagram.file.FileService;
 import com.onstagram.post.domain.PostDto;
+import com.onstagram.post.domain.PostInfoDto;
 import com.onstagram.post.entity.PostEntity;
 import com.onstagram.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -14,47 +20,51 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/post")
 //게시물 등록(ok)
-//게시물 상세정보 페이지(ing)
-//게시물 수정 페이지(ing)
+
+//팔로우한 계정 게시물만 조회(ing)
+//탐색탭 ->좋아요 많은 순서대로 게시물 조회
+
+//게시물 상세정보 페이지(ok)
+//게시물 상세(수정,댓글수정) 페이지(ok)
+
 //게시물 수정(ing)
 //게시물 삭제(ing)
-//팔로우한 계정 게시물만 조회(ing)
-//탐색탭 ->좋아요 많은 순서대로 게시물 조회z
+
 public class PostController {
 
+    private final CommentService commentService;
+    private final MemberService memberService;
     private final PostService postService;
     private final FileService fileService;
 
-    @GetMapping("/postForm/{postId}") //게시물 등록 페이지(회원정보 리턴)
-    public MemberDetail postForm(@PathVariable("postId") Long postId) {
+    @GetMapping("/postForm") //게시물 등록 페이지(회원정보 리턴)
+    public ResponseEntity<MemberDto> postForm(HttpServletRequest request) {
         log.info("게시물 등록 페이지 들어옴(계정 주인 정보 페이지에 전송)");
-        return postService.findById(postId);
+        try {
+            String email = memberService.getEmail(request); // token을 통해서 User의 id를 뽑아오는 메서드
+            MemberDto memberDto = memberService.findByEmail(email);
+            return new ResponseEntity<>(memberDto,HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); //이건 맞는지 모름
+        }
     }
 
-//    @GetMapping("postModifyForm/{postId}") //게시물 수정 페이지
-//    public PostStatus postModifyForm(@PathVariable("postId") Long postId) {
-//
-//        return null;
-//    }
-    
-    //게시물 목록(로그인한 사람 게시물만 조회)
-    @GetMapping("postList/{userId}")
-    public ResponseEntity<List<PostDto>> postList(@PathVariable("userId") Long userId) {
-
-
-
-
-
-
-
+    //게시물 목록
+    //전체 게시물에서 likeCount가 많은순으로 게시물 조회
+    //게시물 목록(팔로우한 사람 게시물만 조회) --> 메인
+    @GetMapping("/postList")
+    public ResponseEntity<List<PostDto>> postList() {
 
 
         //try-catch문으로 하기
@@ -68,6 +78,40 @@ public class PostController {
         //postDtoList.add(PostDto)를 한다.
         //}
         return new ResponseEntity<>(postDtoList,HttpStatus.OK);
+    }
+
+    @GetMapping("postInfo/{postId}") //게시물 상세 페이지 -> 해당 게시물정보, 댓글정보, 회원정보
+    public ResponseEntity<PostInfoDto> postModifyForm(@PathVariable("postId") Long postId, HttpServletRequest request) {
+        log.info("게시물 상세페이지");
+        try {
+            String email = memberService.getEmail(request); // token을 통해서 User의 id를 뽑아오는 메서드
+            MemberDto memberDto = memberService.findByEmail(email); //회원 정보
+
+            PostEntity postEntity = postService.findById(postId);
+            if(postEntity == null) {
+                return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
+            }
+            PostDto postDto = PostDto.builder().postEntity(postEntity).build();
+
+            CommentEntity commentEntity = commentService.findById(postId);
+            if(commentEntity == null) {
+                return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
+            }
+            CommentDto commentDto = CommentDto.builder().commentEntity(commentEntity).build();
+            
+            PostInfoDto postInfoDto = PostInfoDto.builder()
+                    .memberDto(memberDto)
+                    .postDto(postDto)
+                    .commentDto(commentDto)
+                    .build();
+            
+            return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); //이건 맞는지 모름
+        }
+
     }
 
     //게시물 등록
@@ -107,10 +151,6 @@ public class PostController {
 
     }
 
-
-
-
-
-
+    //게시물 수정
 
 }

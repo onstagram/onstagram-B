@@ -4,6 +4,7 @@ import com.onstagram.Member.domain.MemberDetail;
 import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.domain.SignInDto;
 import com.onstagram.Member.entity.MemberEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,7 +15,7 @@ public interface MemberService {
     public boolean IdCheck(String email); //아이디(이메일) 중복 체크
     public String signin(SignInDto signInDto); //로그인(토큰값 반환)
     public MemberDto findByEmail(String email); //회원 정보
-//    public void updateUser(MemberDto memberDto, MultipartFile newImg); //회원정보수정 --> S3후 하기
+    public MemberDto updateUser(MemberDto memberDto, MultipartFile newImg); //회원정보수정
 
 //    public List<PostDto> findById(Long id); //해당 계정 회원의 모든 게시물
 //

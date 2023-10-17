@@ -9,8 +9,10 @@ import com.onstagram.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.*;
+import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -111,33 +113,18 @@ public class MemberController {
         log.info("회원정보 페이지");
         try {
             String email = memberService.getEmail(request); // token을 통해서 User의 id를 뽑아오는 메서드
-            log.info("이메일 : " + email);
-            if(email != null) {
-                MemberDto memberDto = memberService.findByEmail(email);
-                return new ResponseEntity<>(memberDto, HttpStatus.OK);
-            }
-            else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-
+            MemberDto memberDto = memberService.findByEmail(email);
+            return new ResponseEntity<>(memberDto, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-//    회원수정은 s3후 하기
-//    @PutMapping(value = "/user/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //회원정보 수정
-//    public HttpStatus modify(MemberDto memberDto, @RequestParam MultipartFile userImg) {
-//        log.info("회원수정에 들어왔습니다.");
-//        try {
-//            memberService.updateUser(memberDto, userImg);
-//            return HttpStatus.OK;
-//
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            return HttpStatus.BAD_REQUEST;
-//        }
-//    }
+    @PutMapping(value = "/user/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //회원정보 수정
+    public HttpStatus modify(MemberDto memberDto, @RequestParam MultipartFile userImg) {
+        log.info("회원수정에 들어왔습니다.");
+        return memberService.updateUser(memberDto, userImg) != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+    }
 
 }

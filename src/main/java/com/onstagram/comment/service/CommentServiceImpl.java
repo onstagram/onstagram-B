@@ -1,8 +1,10 @@
 package com.onstagram.comment.service;
 
 
+import com.onstagram.comment.domain.CommentDto;
 import com.onstagram.comment.entity.CommentEntity;
 import com.onstagram.comment.repository.CommentRepository;
+import com.onstagram.post.entity.PostEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,16 @@ import java.util.Optional;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+
+    @Override //게시물의 댓글 목록
+    public CommentEntity findById(Long postId) {
+        Optional<CommentEntity> commentEntity = commentRepository.findById(postId);
+        if(commentEntity.isPresent()) {
+            return commentEntity.orElse(null);
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public Long save(CommentEntity commentEntity) {

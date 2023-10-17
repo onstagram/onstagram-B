@@ -45,12 +45,21 @@ public class SecurityConfig {
                 // URL 관리
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
-                .antMatchers("/user/**").permitAll()
                 .anyRequest().permitAll()
 //                .antMatchers("/signup", "/signin", "/").permitAll()
 //                .anyRequest().hasRole("USER") //위에 URL외에는 USER라는 권한만 허용
 //                .anyRequest().authenticated() //authenticated() : 로그인 인증만 해야됨
                 .and()
+
+                .formLogin()
+                    .loginPage("/login") // 로그인 페이지 지정
+                    .permitAll() // 로그인 페이지는 모두 허용
+                    .defaultSuccessUrl("/main") // 로그인 성공 후 이동할 페이지
+                    .and()
+                .logout()
+                    .permitAll() // 로그아웃은 모두 허용
+                .and()
+
                 // JwtAuthenticationFilter를 먼저 적용
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 

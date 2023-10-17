@@ -22,6 +22,8 @@ public class FileServiceImpl implements FileService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;//버킷이름
+    @Value("${spring.servlet.multipart.location}")
+    private String localpath; //업로드시 임시 저장 경로
 
     @Override //파일 업로드(저장)
     public String FileUpload(MultipartFile file, String path) {
@@ -47,5 +49,10 @@ public class FileServiceImpl implements FileService {
             log.info("S3 업로드 실패");
             return null; //실패
         }
+    }
+
+    @Override //파일 삭제
+    public void DeleteFile(String fileName) {
+        amazonS3Client.deleteObject(bucket, fileName);
     }
 }

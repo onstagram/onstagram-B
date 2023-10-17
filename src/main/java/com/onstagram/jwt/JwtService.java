@@ -22,10 +22,10 @@ public class JwtService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("넌머냐냐냐냐냐냔냐냐");
+        log.info("시큐리티 로그인 아이디 값 : " + username);
         List<MemberEntity> members = memberRepository.findOneByEmail(username); //username:로그인 아이디값 -> email
         if (!members.isEmpty()) {
-            log.info("잠좀 자자");
+            log.info("로그인한 회원의 정보가 있다");
             return MemberDetail.builder().memberEntity(members.get(0)).build();
         } else {
             throw new UsernameNotFoundException("사용자를 찾을 수 업습니다.");
