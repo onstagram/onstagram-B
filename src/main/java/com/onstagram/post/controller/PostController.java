@@ -29,7 +29,7 @@ import java.util.List;
 //게시물 수정(ing)
 //게시물 삭제(ing)
 //팔로우한 계정 게시물만 조회(ing)
-//탐색탭 ->좋아요 많은 순서대로 게시물 조회
+//탐색탭 ->좋아요 많은 순서대로 게시물 조회z
 public class PostController {
 
     private final PostService postService;
