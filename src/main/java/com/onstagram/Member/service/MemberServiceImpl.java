@@ -24,7 +24,7 @@ public class MemberServiceImpl implements MemberService {
         String encodePassword = bCryptPasswordEncoder.encode(rawPassword);
 
         memberEntity.setPassword(encodePassword);
-        memberEntity.setUserImg("C:/image/profile/default.jpg");
+        memberEntity.setUserImg("https://onstagram.s3.ap-northeast-2.amazonaws.com/Member/default.png");
 
         memberRepository.save(memberEntity); //DB에 회원정보 저장
         return memberEntity.getUserId();

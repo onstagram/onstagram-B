@@ -23,9 +23,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Long cratePost(PostEntity postEntity) {
-        postRepository.createPost(postEntity);
-        return postEntity.getPostId();
+    public PostEntity cratePost(PostEntity postEntity) {
+        try {
+            postRepository.createPost(postEntity);
+            return postEntity;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

@@ -1,15 +1,14 @@
 package com.onstagram.post.controller;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.entity.MemberEntity;
+import com.onstagram.file.FileService;
 import com.onstagram.post.domain.PostDto;
 import com.onstagram.post.entity.PostEntity;
 import com.onstagram.post.service.PostService;
+import com.onstagram.status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,20 +16,24 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/post")
+//게시물 등록(ok)
+//게시물 상세정보 페이지(ing)
+//게시물 수정 페이지(ing)
+//게시물 수정(ing)
+//게시물 삭제(ing)
+//팔로우한 계정 게시물만 조회(ing)
+//탐색탭 ->좋아요 많은 순서대로 게시물 조회
 public class PostController {
 
-    private final AmazonS3Client amazonS3Client;
-
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;//버킷이름
-
     private final PostService postService;
+    private final FileService fileService;
 
     @GetMapping("/postForm/{postId}") //게시물 등록 페이지(회원정보 리턴)
     public MemberDto postForm(@PathVariable("postId") Long postId) {
@@ -38,15 +41,23 @@ public class PostController {
         return postService.findById(postId);
     }
 
-    @GetMapping("postModifyForm/{postId}") //게시물 수정 페이지
-    public HttpStatus postModifyForm(@PathVariable("postId") Long postId) {
-
-        return HttpStatus.OK;
-    }
+//    @GetMapping("postModifyForm/{postId}") //게시물 수정 페이지
+//    public PostStatus postModifyForm(@PathVariable("postId") Long postId) {
+//
+//        return null;
+//    }
     
     //게시물 목록(로그인한 사람 게시물만 조회)
-    @GetMapping("postList")
-    public ResponseEntity<List<PostDto>> postList(@PathVariable("id") Long id) {
+    @GetMapping("postList/{userId}")
+    public ResponseEntity<List<PostDto>> postList(@PathVariable("userId") Long userId) {
+
+
+
+
+
+
+
+
 
         //try-catch문으로 하기
 
@@ -73,37 +84,35 @@ public class PostController {
         //게시물 사진 업로드 시작
         //이미지 파일인지 확인
         if (!file.getContentType().startsWith("image")) {
-            return HttpStatus.INTERNAL_SERVER_ERROR; //415 에러코드 미디어 타입 에러
+            return HttpStatus.BAD_REQUEST;
         }
         //S3에 파일 업로드
+        String postImg = fileService.FileUpload(file,"post");
 
-        try {
-            String fileName = file.getOriginalFilename(); // 선택한 파일명을 가져옴
-            String fileUrl = "https://" + bucket + fileName; // S3에 업로드된 파일의 URL 생성
+        PostEntity postEntity = PostEntity.builder()
+                .caption(postDto.getCaption()) //게시물 설명
+                .memberEntity(memberEntity) //게시물 작성한 회원 아이디(엔터티로 넣음)
+                .postImg(postImg) // 게시물을 등록함
+                .likeCount(0L) // 좋아요 개수 초기값으 0으로 지정
+                .build();
 
-            ObjectMetadata metadata = new ObjectMetadata(); // S3 객체 메타데이터 생성
-            metadata.setContentType(file.getContentType()); // 파일의 컨텐츠 타입 설정
-            metadata.setContentLength(file.getSize()); // 파일 크기 설정
+        PostEntity postDB = postService.cratePost(postEntity); //게시물 등록
+//        PostDto postDto1 = PostDto.builder().postEntity(postDB).build(); //게시물 등록한 entity정보를 dto에 담아서 리턴
 
-            // Amazon S3에 파일 업로드. "post/" 폴더에 저장.
-            amazonS3Client.putObject(bucket, "post/"+fileName, file.getInputStream(), metadata);
+        if(postDB != null) { // 성공
+            return HttpStatus.OK;
 
-            PostEntity postEntity = PostEntity.builder()
-                    .caption(postDto.getCaption()) //게시물 설명
-                    .memberEntity(memberEntity) //게시물 작성한 회원 아이디(엔터티로 넣음)
-                    .postImg(fileUrl) // 게시물을 등록함
-                    .build();
-
-            postService.cratePost(postEntity); //게시물 등록
-
-            return HttpStatus.OK; //성공(200)
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else { //실패
             return HttpStatus.BAD_REQUEST;
+
         }
 
     }
+
+
+
+
+
 
 
 }

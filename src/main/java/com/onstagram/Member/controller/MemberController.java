@@ -22,6 +22,12 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
+//회원가입(ok)
+//로그인은 ok(+토큰,시큐리티)
+//로그아웃
+//마이페이지(ing)
+//회원정보 수정 페이지(ing)
+//회원정보 수정(ing)
 public class MemberController {
 
     private final MemberService memberService;
@@ -85,7 +91,7 @@ public class MemberController {
 
     }
 
-    @PostMapping("/login") //로그인
+    @PostMapping("/login") //로그인-(ok)
     public ResponseEntity<MemberDto> login(@RequestBody MemberDto memberDto) {
         log.info("로그인 시작");
         try {

@@ -28,7 +28,7 @@ public class PostEntity {
     private Long postId;
 
     @ManyToOne//회원(1) : 게시물(many)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "user_id")
     private MemberEntity memberEntity; //회원테이블 참조(외래키)
 
     @Column(nullable = false, columnDefinition = "CLOB")
@@ -36,6 +36,8 @@ public class PostEntity {
 
     @Column(nullable = false)
     private String postImg;
+
+    private Long likeCount; //좋아요 개수
 
     @CreatedDate
     private LocalDate postDate;

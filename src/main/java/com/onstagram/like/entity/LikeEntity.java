@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-@Table(name="LIKE_INFO")
+@Table(name="like_info")
 @AllArgsConstructor
 public class LikeEntity {
 
@@ -27,11 +27,11 @@ public class LikeEntity {
     private Long likeId; //좋아요 id(시퀀스)
 
     @ManyToOne//회원(1) : 게시물(many)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "user_id")
     private MemberEntity memberEntity; //Member 테이블의 user_id 참조
 
     @ManyToOne//회원(1) : 게시물(many)
-    @JoinColumn(name = "POST_ID")
+    @JoinColumn(name = "post_id")
     private PostEntity postEntity; //POST 테이블의  post_id 참조
 
     @CreatedDate
