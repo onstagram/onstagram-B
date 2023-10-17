@@ -27,6 +27,15 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    @Override
+    public void delete(Long commentId) {
+        try {
+            commentRepository.deleteById(commentId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 //    @Override //해당 댓글 정보
 //    public Optional<CommentEntity> findById(Long commentId) {
 //        try {

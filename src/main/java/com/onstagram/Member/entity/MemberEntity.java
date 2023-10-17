@@ -5,9 +5,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -45,7 +52,7 @@ public class MemberEntity {
     @CreatedDate
     private LocalDate userDate;
 
-    @PrePersist //엔티티를 만들고 persist(save) 메서드를 호출할 때
+    @PrePersist
     public void onPrePersist() {
         this.userDate = LocalDate.now();
     }

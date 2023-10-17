@@ -1,12 +1,11 @@
 package com.onstagram.post.controller;
 
-import com.onstagram.Member.domain.MemberDto;
+import com.onstagram.Member.domain.MemberDetail;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.file.FileService;
 import com.onstagram.post.domain.PostDto;
 import com.onstagram.post.entity.PostEntity;
 import com.onstagram.post.service.PostService;
-import com.onstagram.status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Log4j2
@@ -36,7 +34,7 @@ public class PostController {
     private final FileService fileService;
 
     @GetMapping("/postForm/{postId}") //게시물 등록 페이지(회원정보 리턴)
-    public MemberDto postForm(@PathVariable("postId") Long postId) {
+    public MemberDetail postForm(@PathVariable("postId") Long postId) {
         log.info("게시물 등록 페이지 들어옴(계정 주인 정보 페이지에 전송)");
         return postService.findById(postId);
     }

@@ -2,15 +2,19 @@ package com.onstagram.Member.domain;
 
 import com.onstagram.Member.entity.MemberEntity;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
+import java.util.Collection;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberDto {
+public class MemberDetail implements UserDetails {
+
     private Long userId;
 
     @NotEmpty(message = "이메일은 필수")
@@ -32,7 +36,7 @@ public class MemberDto {
     private LocalDate userDate;
 
     @Builder
-    public MemberDto(MemberEntity memberEntity) {
+    public MemberDetail(MemberEntity memberEntity) {
         userId = memberEntity.getUserId();
         email = memberEntity.getEmail();
         password = memberEntity.getPassword();
@@ -41,5 +45,44 @@ public class MemberDto {
         userImg = memberEntity.getUserImg();
         introduction = memberEntity.getIntroduction();
         userDate = memberEntity.getUserDate();
+    }
+
+    public MemberEntity toEntity() {
+        return MemberEntity.builder()
+                .email(email)
+                .password(password)
+                .userName(userName)
+                .userPhone(userPhone)
+                .build();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

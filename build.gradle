@@ -40,7 +40,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	// jwt
+	// JWT
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 //	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
 //	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
 //	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'

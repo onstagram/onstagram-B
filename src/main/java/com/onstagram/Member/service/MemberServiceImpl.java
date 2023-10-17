@@ -1,20 +1,45 @@
 package com.onstagram.Member.service;
 
+import com.onstagram.Member.domain.MemberDetail;
 import com.onstagram.Member.domain.MemberDto;
+import com.onstagram.Member.domain.SignInDto;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.repository.MemberRepository;
+import com.onstagram.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Log4j2
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder; //비밀 번호 암호화
+    private final JwtTokenProvider jwtTokenProvider; //토큰 생성하기 위해
+
+    //토큰 받아오기
+    @Override
+    public String getEmail(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request); //토큰값 가져오기
+        log.info("토큰값 : " + token);
+        if (token != null && jwtTokenProvider.validateToken(token)) { //토큰이 있고 유효기간이 남았으면
+            log.info("토큰 유효 가능");
+            String email = jwtTokenProvider.getEmail(token);
+            return email;
+        } else {
+            log.info("토큰 유효 불가능");
+            return null;
+//            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
+    }
 
     @Override //회원가입
     public Long join(MemberEntity memberEntity) {
@@ -32,22 +57,33 @@ public class MemberServiceImpl implements MemberService {
 
     @Override //아이디 중복체크
     public boolean IdCheck(String email) {
-        return memberRepository.findOneByEmail(email)!=null; //존재하면 true, 존재 x false
+        return !memberRepository.findOneByEmail(email).isEmpty(); //존재하면 true, 존재 x false
     }
 
-    @Override //로그인할때 비밀번호 체크(복호화)
-    public MemberDto checkPassword(MemberDto memberDto) {
+    @Override //로그인 처리후 토큰 반환
+    public String signin(SignInDto signInDto) {
+        log.info("로그인 시작 서비스 들어옴");
+        List<MemberEntity> members = memberRepository.findOneByEmail(signInDto.getEmail());
+        if (members.isEmpty()) {
+            return null; //아이디가 존재x
+        }
+        log.info("아이디 존재");
+        MemberEntity member = members.get(0);
+        log.info("로그인 비밀번호 : " + signInDto.getPassword());
+        log.info("기존 회원 비밀번호와 매칭 : " + bCryptPasswordEncoder.matches(signInDto.getPassword(), member.getPassword()));
+        if (!bCryptPasswordEncoder.matches(signInDto.getPassword(), member.getPassword())) {
+            log.info("비밀번호 불일치");
+            return null; //비밀번호 불일치
+        }
 
-        MemberEntity memberEntity = memberRepository.findOneByEmail(memberDto.getEmail());
-        //true : 비밀번호 일치(로그인 성공), false: 비밀번호 불일치
-        boolean result = bCryptPasswordEncoder.matches(memberDto.getPassword(), memberEntity.getPassword());
-
-        return result ? MemberDto.builder().memberEntity(memberEntity).build() : null;
+        // 로그인에 성공하면 email, userId 토큰 생성 후 반환
+        return jwtTokenProvider.createToken(member.getEmail(),member.getUserId());
     }
 
     @Override //해당 회원 회원정보
     public MemberDto findByEmail(String email) {
-        MemberEntity memberEntity = memberRepository.findOneByEmail(email);
+        List<MemberEntity> members = memberRepository.findOneByEmail(email);
+        return members.isEmpty() ? null : MemberDto.builder().memberEntity(members.get(0)).build();
 //        if (memberEntity == null) {
 //            throw new NullPointerException();
 //        }
@@ -56,7 +92,6 @@ public class MemberServiceImpl implements MemberService {
 //        ).orElseThrow(
 //                () -> new NullPointerException()
 //        );
-        return MemberDto.builder().memberEntity(memberEntity).build();
     }
 
 //    @Override //회원정보 수정

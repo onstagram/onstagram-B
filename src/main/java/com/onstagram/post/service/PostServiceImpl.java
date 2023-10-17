@@ -1,6 +1,6 @@
 package com.onstagram.post.service;
 
-import com.onstagram.Member.domain.MemberDto;
+import com.onstagram.Member.domain.MemberDetail;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.post.entity.PostEntity;
 import com.onstagram.post.repository.PostRepository;
@@ -17,9 +17,9 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
 
     @Override
-    public MemberDto findById(Long id) {
+    public MemberDetail findById(Long id) {
         MemberEntity memberEntity = postRepository.findById(id);
-        return new ModelMapper().map(memberEntity, MemberDto.class); //memberEntity를 MemberDto로 매핑해서 dto를 리턴
+        return new ModelMapper().map(memberEntity, MemberDetail.class); //memberEntity를 MemberDto로 매핑해서 dto를 리턴
     }
 
     @Override

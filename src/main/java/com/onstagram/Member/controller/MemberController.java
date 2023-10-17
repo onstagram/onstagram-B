@@ -1,23 +1,19 @@
 package com.onstagram.Member.controller;
 
+import com.onstagram.Member.domain.MemberDetail;
 import com.onstagram.Member.domain.MemberDto;
-import com.onstagram.Member.domain.MypageDto;
+import com.onstagram.Member.domain.SignInDto;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.service.MemberService;
-import com.onstagram.post.domain.PostDto;
 import com.onstagram.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,7 +59,7 @@ public class MemberController {
 //    }
 
     @PostMapping("signup") //회원가입(ok)
-    public HttpStatus join(@Valid @RequestBody MemberDto memberDto, BindingResult result) {
+    public HttpStatus join(@Valid @RequestBody MemberDetail memberDto, BindingResult result) {
 
         if (result.hasErrors()) {
             log.info("이곳은 빈칸 에러입니다.");
@@ -92,43 +88,42 @@ public class MemberController {
     }
 
     @PostMapping("/login") //로그인-(ok)
-    public ResponseEntity<MemberDto> login(@RequestBody MemberDto memberDto) {
+    public ResponseEntity<String> login(@RequestBody SignInDto signinDto) {
         log.info("로그인 시작");
         try {
-            //아이디 체크
-            boolean IdCheck = memberService.IdCheck(memberDto.getEmail());
-
-            if(!IdCheck) { //false:아이디 존재 X
-                return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+            String token = memberService.signin(signinDto); //토큰 받아오기
+            log.info("토큰값 : " + token);
+            if(token != null) {
+                HttpHeaders httpHeaderseaders = new HttpHeaders();
+                httpHeaderseaders.set("TOKEN", token);
+                return new ResponseEntity<>("success", httpHeaderseaders, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("fail", null,HttpStatus.BAD_REQUEST);
             }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("fail");
+        }
+    }
 
-            //로그인 아이디 존재할 경우
-            //비밀번호 체크
-            MemberDto loginMemberDto = memberService.checkPassword(memberDto);
 
-            if(loginMemberDto != null) {
-                log.info("토큰을 생성해야 합니다.!!!!!!!");
-                //토큰생성
-                /*
-                * 토큰 발행하는 코드 추가
-                */
-                return new ResponseEntity<>(loginMemberDto, HttpStatus.OK); //로그인 성공
+    @GetMapping("/user/modifyForm")//회원정보 수정 페이지 @PathVariable("email") String email,
+    public ResponseEntity<MemberDto> modifyForm(HttpServletRequest request) {
+        log.info("회원정보 페이지");
+        try {
+            String email = memberService.getEmail(request); // token을 통해서 User의 id를 뽑아오는 메서드
+            log.info("이메일 : " + email);
+            if(email != null) {
+                MemberDto memberDto = memberService.findByEmail(email);
+                return new ResponseEntity<>(memberDto, HttpStatus.OK);
             }
             else {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-    }
-
-
-    @GetMapping("/user/modifyForm/{email}")//회원정보 수정 페이지
-    public MemberDto modifyForm(@PathVariable("email") String email) {
-        return memberService.findByEmail(email);
     }
 
 //    회원수정은 s3후 하기
