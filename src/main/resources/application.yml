@@ -22,9 +22,11 @@
 #oracle
 spring:
   datasource:
-    url: jdbc:oracle:thin:@localhost:1521:orcl
+    url: jdbc:oracle:thin:@onstagram.cl1nxhjxrouz.ap-northeast-2.rds.amazonaws.com:1521:orcl
+#    url: jdbc:oracle:thin:@localhost:1521:orcl
     username: onstagram
-    password: 123
+    password: onstagram123
+#    password: 123
     driver-class-name: oracle.jdbc.OracleDriver
 
 
@@ -32,7 +34,7 @@ spring:
     generate-ddl: true
     properties:
       hibernate:
-        hbm2ddl.auto: update
+        hbm2ddl.auto: create
         format_sql: true
     database: oracle
     database-platform: org.hibernate.dialect.OracleDialect
