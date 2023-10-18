@@ -1,6 +1,5 @@
 package com.onstagram.post.controller;
 
-import com.onstagram.Member.domain.MemberDetail;
 import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.service.MemberService;
@@ -8,6 +7,7 @@ import com.onstagram.comment.domain.CommentDto;
 import com.onstagram.comment.entity.CommentEntity;
 import com.onstagram.comment.service.CommentService;
 import com.onstagram.file.FileService;
+import com.onstagram.jwt.JwtTokenProvider;
 import com.onstagram.post.domain.PostDto;
 import com.onstagram.post.domain.PostInfoDto;
 import com.onstagram.post.entity.PostEntity;
@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Log4j2
 @RestController
@@ -46,6 +45,7 @@ public class PostController {
     private final MemberService memberService;
     private final PostService postService;
     private final FileService fileService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/postForm") //게시물 등록 페이지(회원정보 리턴)
     public ResponseEntity<MemberDto> postForm(HttpServletRequest request) {
@@ -87,22 +87,36 @@ public class PostController {
             String email = memberService.getEmail(request); // token을 통해서 User의 id를 뽑아오는 메서드
             MemberDto memberDto = memberService.findByEmail(email); //회원 정보
 
+            if(memberDto == null) {
+                return new ResponseEntity("회원정보실패", HttpStatus.BAD_REQUEST);
+            }
+
+            log.info(memberDto.getUserId() + " || 아이디 : " + memberDto.getUserId());
+
+
             PostEntity postEntity = postService.findById(postId);
             if(postEntity == null) {
-                return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity("게시물실패", HttpStatus.BAD_REQUEST);
             }
             PostDto postDto = PostDto.builder().postEntity(postEntity).build();
 
-            CommentEntity commentEntity = commentService.findById(postId);
-            if(commentEntity == null) {
-                return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
+            log.info("게시물 아이디 : " + postDto.getPostId());
+            log.info("게시물 아이디 : " + postId);
+
+            List<CommentEntity> comments = commentService.findAllById(postId);
+            List<CommentDto> commentList = new ArrayList<>();
+
+            for(CommentEntity comment : comments) {
+                commentList.add(CommentDto.builder().commentEntity(comment).build());
             }
-            CommentDto commentDto = CommentDto.builder().commentEntity(commentEntity).build();
+
+
+            log.info("댓글 개수 : " + commentList.size());
             
             PostInfoDto postInfoDto = PostInfoDto.builder()
                     .memberDto(memberDto)
                     .postDto(postDto)
-                    .commentDto(commentDto)
+                    .commentList(commentList)
                     .build();
             
             return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
@@ -116,12 +130,19 @@ public class PostController {
 
     //게시물 등록
     @PostMapping(value="/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public HttpStatus register(@RequestParam("file") MultipartFile file, @ModelAttribute PostDto postDto) {
+    public HttpStatus register(@RequestParam("file") MultipartFile file, @ModelAttribute PostDto postDto,
+                               HttpServletRequest request) {
+
+        String token = jwtTokenProvider.resolveToken(request);
+        Long id = jwtTokenProvider.getUserIdFromToken(token);
+
+        log.info("토큰명 : " + token);
+        log.info("회원아이디 :" + id);
 
         log.info("게시물 등록 들어옴");
 
         //회원아이디 회원 엔터티에 저장
-        MemberEntity memberEntity = MemberEntity.builder().userId(postDto.getUserId()).build();
+        MemberEntity memberEntity = MemberEntity.builder().userId(id).build();
 
         //게시물 사진 업로드 시작
         //이미지 파일인지 확인

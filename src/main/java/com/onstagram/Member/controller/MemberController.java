@@ -5,6 +5,7 @@ import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.domain.SignInDto;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.service.MemberService;
+import com.onstagram.jwt.JwtService;
 import com.onstagram.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,8 +25,8 @@ import javax.validation.Valid;
 //로그인은 ok(+토큰,시큐리티)
 //로그아웃
 //마이페이지(ing)
-//회원정보 수정 페이지(ing)
-//회원정보 수정(ing)
+//회원정보 수정 페이지(ok)
+//회원정보 수정(ok) -> 파일명만 어덕해 하기
 public class MemberController {
 
     private final MemberService memberService;
@@ -121,10 +122,12 @@ public class MemberController {
         }
     }
 
+    private final JwtService jwtService;
     @PutMapping(value = "/user/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //회원정보 수정
-    public HttpStatus modify(MemberDto memberDto, @RequestParam MultipartFile userImg) {
+    public HttpStatus modify(MemberDto memberDto, @RequestParam MultipartFile file, HttpServletRequest request) {
+        memberDto.setEmail(memberService.getEmail(request)); // token을 통해서 User의 id를 뽑아오는 메서드
         log.info("회원수정에 들어왔습니다.");
-        return memberService.updateUser(memberDto, userImg) != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return memberService.updateUser(memberDto, file) != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     }
 
 }

@@ -97,36 +97,48 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override //회원정보 수정
-    public MemberDto updateUser(MemberDto memberDto, MultipartFile userImg) {
+    public MemberDto updateUser(MemberDto memberDto, MultipartFile file) {
+
+        log.info("회원정보 수정 서비스 들어옴");
+        log.info("자기소개 : " + memberDto.getIntroduction());
+        log.info("file : " + file.getOriginalFilename());
+        log.info("이메일 : " + memberDto.getEmail());
 
         MemberEntity memberEntity = memberRepository.findOneByEmail(memberDto.getEmail()).get(0);//수정전 회원정보 가져오기
         String oldImg = memberEntity.getUserImg(); //수정전 이미지 파일명
+        log.info("수정전 이미지 주소 : " + oldImg);
         String[] img = oldImg.split("/");
 
         oldImg = img[img.length-1]; //맨 마지막 값이 파일명
+        log.info("수정전 이미지 파일명 : " + oldImg);
 
-        String originalName = userImg.getOriginalFilename(); //수정한 파일명
+        String originalName = file.getOriginalFilename(); //수정한 파일명
+        log.info("수정하는 이미지 파일명 : " + originalName);
+
         boolean imageChanged = !oldImg.equals(originalName); //기존이미지와 업로드 이미지가 같은지 비교
         String path = "Member";
 
         if (imageChanged) {
-            if ("default".equals(originalName)) {
+            if ("default.png".equals(originalName)) {
+                log.info("1번 경우");
                 // 새 이미지가 default인 경우, 기존 이미지는 default가 아니므로 삭제
                 //기존 이미지 삭제
-                fileService.DeleteFile(path + "/" + originalName);
+                fileService.DeleteFile(path + "/" + oldImg);
                 //새로운 이미지 정보만 업로드
                 memberEntity.setUserImg("https://onstagram.s3.ap-northeast-2.amazonaws.com/Member/default.png");
-            } else if ("default".equals(oldImg)) {
+            } else if ("default.png".equals(oldImg)) {
+                log.info("2번 경우");
                 // 기존 이미지가 default이고, 새 이미지가 default가 아닌 경우, 새 이미지 업로드
                 //새 이미지 업로드
-                String url = fileService.FileUpload(userImg,path);
+                String url = fileService.FileUpload(file,path);
                 //새 이미지 url로 db 저장
                 memberEntity.setUserImg(url);
             } else {
+                log.info("3번 경우");
                 // 기존 이미지와 새 이미지 모두 default가 아닌 경우
                 // 기존 이미지 삭제 후, 새 이미지 업로드
-                fileService.DeleteFile(path + "/" + originalName);
-                String url = fileService.FileUpload(userImg,path);
+                fileService.DeleteFile(path + "/" + oldImg);
+                String url = fileService.FileUpload(file,path);
                 //새이미지 url로 변경
                 memberEntity.setUserImg(url);
             }

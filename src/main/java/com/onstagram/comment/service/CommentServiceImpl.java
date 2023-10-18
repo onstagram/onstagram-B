@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,16 +20,12 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
 
     @Override //게시물의 댓글 목록
-    public CommentEntity findById(Long postId) {
-        Optional<CommentEntity> commentEntity = commentRepository.findById(postId);
-        if(commentEntity.isPresent()) {
-            return commentEntity.orElse(null);
-        } else {
-            return null;
-        }
+    public List<CommentEntity> findAllById(Long postId) {
+        System.out.println("게시물 아이디 ::::::::::::::: " + postId);
+        return commentRepository.findAllByPostId(postId);
     }
 
-    @Override
+    @Override //댓글 등록
     public Long save(CommentEntity commentEntity) {
         try {
             commentRepository.save(commentEntity);
