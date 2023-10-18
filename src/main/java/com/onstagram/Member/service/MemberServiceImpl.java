@@ -51,7 +51,7 @@ public class MemberServiceImpl implements MemberService {
         String encodePassword = bCryptPasswordEncoder.encode(rawPassword);
 
         memberEntity.setPassword(encodePassword);
-        memberEntity.setUserImg("https://onstagram.s3.ap-northeast-2.amazonaws.com/Member/default.png");
+        memberEntity.setUserImg("https://onstagram1.s3.ap-northeast-2.amazonaws.com/member/default.png");
 
         memberRepository.save(memberEntity); //DB에 회원정보 저장
         return memberEntity.getUserId();
@@ -116,7 +116,7 @@ public class MemberServiceImpl implements MemberService {
         log.info("수정하는 이미지 파일명 : " + originalName);
 
         boolean imageChanged = !oldImg.equals(originalName); //기존이미지와 업로드 이미지가 같은지 비교
-        String path = "Member";
+        String path = "member";
 
         if (imageChanged) {
             if ("default.png".equals(originalName)) {
@@ -125,7 +125,7 @@ public class MemberServiceImpl implements MemberService {
                 //기존 이미지 삭제
                 fileService.DeleteFile(path + "/" + oldImg);
                 //새로운 이미지 정보만 업로드
-                memberEntity.setUserImg("https://onstagram.s3.ap-northeast-2.amazonaws.com/Member/default.png");
+                memberEntity.setUserImg("https://onstagram1.s3.ap-northeast-2.amazonaws.com/member/default.png");
             } else if ("default.png".equals(oldImg)) {
                 log.info("2번 경우");
                 // 기존 이미지가 default이고, 새 이미지가 default가 아닌 경우, 새 이미지 업로드
