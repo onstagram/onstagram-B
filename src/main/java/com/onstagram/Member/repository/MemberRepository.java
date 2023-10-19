@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface MemberRepository {
     public void save(MemberEntity memberEntity); // 회원가입 - ok
-
     public List<MemberEntity> findOneByEmail(String email); //아이디 중복체크 및 로그인
+    public List<MemberEntity> findById(Long userId); //해당 회원 정보
 
 
 

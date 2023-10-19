@@ -1,6 +1,7 @@
 package com.onstagram.post.entity;
 
 import com.onstagram.Member.entity.MemberEntity;
+import com.onstagram.post.domain.PostModifyDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,6 +46,11 @@ public class PostEntity {
     @PrePersist //엔티티를 만들고 persist(save) 메서드를 호출할 때
     public void onPrePersist(){
         this.postDate = LocalDate.now();
+    }
+    
+    public void modifyEntity(PostModifyDto postModifyDto) {
+        caption = postModifyDto.getCaption();
+        postDate = LocalDate.now(); //수정한 날짜로 변경
     }
 
 }

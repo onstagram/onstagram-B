@@ -1,20 +1,14 @@
 package com.onstagram.Member.entity;
 
+import com.onstagram.Member.domain.ModifyDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -56,5 +50,12 @@ public class MemberEntity {
     public void onPrePersist() {
         this.userDate = LocalDate.now();
     }
+
+    public void modifyEntity(ModifyDto modifyDto) {
+        password = modifyDto.getPassword();
+        userImg = modifyDto.getUserImg();
+        introduction = modifyDto.getIntroduction();
+    }
+
 
 }

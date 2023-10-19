@@ -22,13 +22,14 @@ public class JwtService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("시큐리티 로그인 아이디 값 : " + username);
+        log.info("아이디 값 : " + username);
         List<MemberEntity> members = memberRepository.findOneByEmail(username); //username:로그인 아이디값 -> email
-        log.info("아이디가 존재하는지 : " + members.size());
+        log.info("로그인 회원의 정보 크기 : " + members.size());
         if (!members.isEmpty()) {
             log.info("로그인한 회원의 정보가 있다");
             return MemberDetail.builder().memberEntity(members.get(0)).build();
         } else {
+            log.info("회원정보 x");
             throw new UsernameNotFoundException("사용자를 찾을 수 업습니다.");
         }
     }

@@ -1,17 +1,18 @@
 package com.onstagram.post.controller;
 
+import com.onstagram.DtoData;
 import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.service.MemberService;
-import com.onstagram.comment.domain.CommentDto;
-import com.onstagram.comment.entity.CommentEntity;
 import com.onstagram.comment.service.CommentService;
+import com.onstagram.exception.OnstagramException;
 import com.onstagram.file.FileService;
 import com.onstagram.jwt.JwtTokenProvider;
 import com.onstagram.post.domain.PostDto;
-import com.onstagram.post.domain.PostInfoDto;
+import com.onstagram.post.domain.PostModifyDto;
 import com.onstagram.post.entity.PostEntity;
 import com.onstagram.post.service.PostService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -47,110 +48,120 @@ public class PostController {
     private final FileService fileService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @GetMapping("/postForm") //게시물 등록 페이지(회원정보 리턴)
-    public ResponseEntity<MemberDto> postForm(HttpServletRequest request) {
+    @GetMapping("/getpost") //게시물 등록 페이지(회원정보 리턴)
+    public DtoData getpost(HttpServletRequest request) {
         log.info("게시물 등록 페이지 들어옴(계정 주인 정보 페이지에 전송)");
-        try {
-            String email = memberService.getEmail(request); // token을 통해서 User의 id를 뽑아오는 메서드
-            MemberDto memberDto = memberService.findByEmail(email);
-            return new ResponseEntity<>(memberDto,HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); //이건 맞는지 모름
-        }
+        Long userId = memberService.getUserId(request); //토큰으로 회원 아이디 받기
+        MemberDto memberDto = memberService.findById(userId);
+        return new DtoData(HttpStatus.OK.value(), true, memberDto);
+    }
+
+
+    @GetMapping("setting/edit/{postId}")//게시물 수정 페이지(회원정보, 게시물 정보)
+    public DtoData modifyForm(@PathVariable("postId") Long postId) {
+        return new DtoData(HttpStatus.OK.value(), true, postService.postInfo(postId));
     }
 
     //게시물 목록
     //전체 게시물에서 likeCount가 많은순으로 게시물 조회
     //게시물 목록(팔로우한 사람 게시물만 조회) --> 메인
     @GetMapping("/postList")
-    public ResponseEntity<List<PostDto>> postList() {
+    public DtoData postList(HttpServletRequest request) {
+        Long userId = memberService.getUserId(request);
+
+        //내가 팔로우한 아이디 조회
 
 
-        //try-catch문으로 하기
+        //팔로우한 아이디를 가지고 게시글 전부 불러오기
+//        for(Long id : followingId) {
+//            List<PostDto> postDtoList = postService.postList(id);
 
-        //먼저 리턴할 List<PostDto>를 만든다.
-        List<PostDto> postDtoList = new ArrayList<>();
-        //findById를 통해서 내가 팔로우(구독)한 사람 계정을 먼저 전부 조회
-        //List<Long> IdList = findById
-        //for(Long id :IdList) {
-        //여기서 해당 아이디를 통해서 해당 아이디의 PostDto를 받아오고
-        //postDtoList.add(PostDto)를 한다.
-        //}
-        return new ResponseEntity<>(postDtoList,HttpStatus.OK);
+
+
+
+//        }
+        /////////////////
+
+        return null;
     }
 
-    @GetMapping("postInfo/{postId}") //게시물 상세 페이지 -> 해당 게시물정보, 댓글정보, 회원정보
-    public ResponseEntity<PostInfoDto> postModifyForm(@PathVariable("postId") Long postId, HttpServletRequest request) {
-        log.info("게시물 상세페이지");
-        try {
-            String email = memberService.getEmail(request); // token을 통해서 User의 id를 뽑아오는 메서드
-            MemberDto memberDto = memberService.findByEmail(email); //회원 정보
+//    @GetMapping("")
 
-            if(memberDto == null) {
-                return new ResponseEntity("회원정보실패", HttpStatus.BAD_REQUEST);
-            }
-
-            log.info(memberDto.getUserId() + " || 아이디 : " + memberDto.getUserId());
-
-
-            PostEntity postEntity = postService.findById(postId);
-            if(postEntity == null) {
-                return new ResponseEntity("게시물실패", HttpStatus.BAD_REQUEST);
-            }
-            PostDto postDto = PostDto.builder().postEntity(postEntity).build();
-
-            log.info("게시물 아이디 : " + postDto.getPostId());
-            log.info("게시물 아이디 : " + postId);
-
-            List<CommentEntity> comments = commentService.findAllById(postId);
-            List<CommentDto> commentList = new ArrayList<>();
-
-            for(CommentEntity comment : comments) {
-                commentList.add(CommentDto.builder().commentEntity(comment).build());
-            }
-
-
-            log.info("댓글 개수 : " + commentList.size());
-            
-            PostInfoDto postInfoDto = PostInfoDto.builder()
-                    .memberDto(memberDto)
-                    .postDto(postDto)
-                    .commentList(commentList)
-                    .build();
-            
-            return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); //이건 맞는지 모름
-        }
-
-    }
+//    @GetMapping("postInfo/{postId}") //게시물 상세 페이지 -> 해당 게시물정보, 댓글정보, 회원정보
+//    public ResponseEntity<PostInfoDto> postModifyForm(@PathVariable("postId") Long postId, HttpServletRequest request) {
+//        log.info("게시물 상세페이지");
+//        try {
+//            String email = memberService.getEmail(request); // token을 통해서 User의 id를 뽑아오는 메서드
+//            MemberDto memberDto = memberService.findByEmail(email); //회원 정보
+//
+//            if(memberDto == null) {
+//                return new ResponseEntity("회원정보실패", HttpStatus.BAD_REQUEST);
+//            }
+//
+//            log.info(memberDto.getUserId() + " || 아이디 : " + memberDto.getUserId());
+//
+//
+//            PostEntity postEntity = postService.findById(postId);
+//            if(postEntity == null) {
+//                return new ResponseEntity("게시물실패", HttpStatus.BAD_REQUEST);
+//            }
+//            PostDto postDto = PostDto.builder().postEntity(postEntity).build();
+//
+//            log.info("게시물 아이디 : " + postDto.getPostId());
+//            log.info("게시물 아이디 : " + postId);
+//
+//            List<CommentEntity> comments = commentService.findAllById(postId);
+//            List<CommentDto> commentList = new ArrayList<>();
+//
+//            for(CommentEntity comment : comments) {
+//                commentList.add(CommentDto.builder().commentEntity(comment).build());
+//            }
+//
+//
+//            log.info("댓글 개수 : " + commentList.size());
+//
+//            PostInfoDto postInfoDto = PostInfoDto.builder()
+//                    .memberDto(memberDto)
+//                    .postDto(postDto)
+//                    .commentList(commentList)
+//                    .build();
+//
+//            return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
+//
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+////            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); //이건 맞는지 모름
+//        }
+//
+//    }
 
     //게시물 등록
     @PostMapping(value="/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public HttpStatus register(@RequestParam("file") MultipartFile file, @ModelAttribute PostDto postDto,
-                               HttpServletRequest request) {
+    public String register(@RequestParam("file") MultipartFile file, @ModelAttribute PostDto postDto,
+                           HttpServletRequest request) {
 
         String token = jwtTokenProvider.resolveToken(request);
         Long id = jwtTokenProvider.getUserIdFromToken(token);
 
 //        log.info("토큰명 : " + token);
-//        log.info("회원아이디 :" + id);
-
-//        log.info("게시물 등록 들어옴");
+        log.info("회원아이디 :" + postDto.getPostId());
+        log.info("게시물 등록 들어옴");
 
         //회원아이디 회원 엔터티에 저장
-        MemberEntity memberEntity = MemberEntity.builder().userId(postDto.getUserId()).build();
+        MemberEntity memberEntity = MemberEntity.builder().userId(id).build();
 
         //게시물 사진 업로드 시작
         //이미지 파일인지 확인
         if (!file.getContentType().startsWith("image")) {
-            return HttpStatus.BAD_REQUEST;
+            throw new OnstagramException(HttpStatus.BAD_REQUEST.value(), "이미지 파일 아님");
+//            return "이미지 파일이 아니다"; **
         }
         //S3에 파일 업로드
         String postImg = fileService.FileUpload(file,"post");
+
+//        if(postImg == null) { **
+//            return "이미지 업로드를 실패했습니다.";
+//        }
 
         PostEntity postEntity = PostEntity.builder()
                 .caption(postDto.getCaption()) //게시물 설명
@@ -159,19 +170,23 @@ public class PostController {
                 .likeCount(0L) // 좋아요 개수 초기값으 0으로 지정
                 .build();
 
-        PostEntity postDB = postService.cratePost(postEntity); //게시물 등록
+        PostEntity postDB = postService.AddPost(postEntity); //게시물 등록
 //        PostDto postDto1 = PostDto.builder().postEntity(postDB).build(); //게시물 등록한 entity정보를 dto에 담아서 리턴
 
         if(postDB != null) { // 성공
-            return HttpStatus.OK;
+            return "게시물 등록 성공";
 
         } else { //실패
-            return HttpStatus.BAD_REQUEST;
+            return "게시물 등록 실패";
 
         }
 
     }
 
-    //게시물 수정
+    @PutMapping("setting/edit") //게시물 수정
+    public DtoData postModify(@RequestBody PostModifyDto postModifyDto) {
+        PostDto postDto = postService.postModify(postModifyDto);
+        return new DtoData(HttpStatus.OK.value(), true, postDto);
+    }
 
 }

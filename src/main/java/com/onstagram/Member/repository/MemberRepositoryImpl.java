@@ -20,9 +20,16 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public List<MemberEntity> findOneByEmail(String email) {
-            return em.createQuery("select m from MemberEntity m where m.email = :email", MemberEntity.class)
-                    .setParameter("email", email)
-                    .getResultList();
+        return em.createQuery("select m from MemberEntity m where m.email = :email", MemberEntity.class)
+                .setParameter("email", email)
+                .getResultList();
+    }
+
+    @Override
+    public List<MemberEntity> findById(Long userId) { //해당 회원의 정보
+        return em.createQuery("select m from MemberEntity m where m.userId = :userId", MemberEntity.class)
+                .setParameter("userId", userId)
+                .getResultList();
     }
 
 //    @Override

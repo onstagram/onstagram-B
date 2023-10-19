@@ -1,16 +1,14 @@
 package com.onstagram.Member.controller;
 
-import com.onstagram.Member.domain.MemberDetail;
-import com.onstagram.Member.domain.MemberDto;
-import com.onstagram.Member.domain.SignInDto;
+import com.onstagram.Member.domain.*;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.service.MemberService;
 import com.onstagram.jwt.JwtService;
+import com.onstagram.DtoData;
 import com.onstagram.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.*;
-import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -90,45 +88,42 @@ public class MemberController {
 
     }
 
-    @PostMapping("/Login") //로그인-(ok)
+    @PostMapping("/login") //로그인-(ok)
     public ResponseEntity<String> login(@RequestBody SignInDto signinDto) {
         log.info("로그인 시작");
-        try {
-            String token = memberService.signin(signinDto); //토큰 받아오기
-            log.info("토큰값 : " + token);
-            if(token != null) {
-                HttpHeaders httpHeaderseaders = new HttpHeaders();
-                httpHeaderseaders.set("TOKEN", token);
+        String token = memberService.signin(signinDto); //토큰 받아오기
+        log.info("토큰값 : " + token);
+        return new ResponseEntity<>(token, HttpStatus.OK);
+//        if(token != null) {
+//            HttpHeaders httpHeaderseaders = new HttpHeaders();
+//            httpHeaderseaders.set("TOKEN", token);
+//            return new ResponseEntity<>(token, HttpStatus.OK);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("토큰 생성 실패");
+//        }
 
-                return new ResponseEntity<>(token, HttpStatus.OK);
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("토큰 생성 실패");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("로그인 실패");
-        }
     }
 
 
-    @GetMapping("/user/modifyForm")//회원정보 수정 페이지 @PathVariable("email") String email,
-    public ResponseEntity<MemberDto> modifyForm(HttpServletRequest request) {
-        log.info("회원정보 페이지");
-        try {
-            String email = memberService.getEmail(request); // token을 통해서 User의 id를 뽑아오는 메서드
-            MemberDto memberDto = memberService.findByEmail(email);
-            return new ResponseEntity<>(memberDto, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    @GetMapping("setting/edit/{userId}")//회원정보 수정 페이지 @PathVariable("userId") Long userId
+    public DtoData modifyForm(@PathVariable("userId") Long userId) {
+        log.info(userId + "의 회원정보");
+        MemberDto memberDto = memberService.findById(userId);
+        if(memberDto == null) {
+            return new DtoData(HttpStatus.BAD_REQUEST.value(), false, memberDto);
         }
+        return new DtoData(HttpStatus.OK.value(), true, memberDto);
     }
 
     private final JwtService jwtService;
-    @PutMapping(value = "/user/modify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //회원정보 수정
-    public HttpStatus modify(MemberDto memberDto, @RequestParam MultipartFile file, HttpServletRequest request) {
-        memberDto.setEmail(memberService.getEmail(request)); // token을 통해서 User의 id를 뽑아오는 메서드
+    @PutMapping(value = "setting/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //회원정보 수정
+    public DtoData modify(ModifyDto modifyDto, @RequestParam MultipartFile file, HttpServletRequest request) {
+        request.getHeader("");
         log.info("회원수정에 들어왔습니다.");
-        return memberService.updateUser(memberDto, file) != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        Long userId = memberService.getUserId(request); //토큰으로 회원 아이디 받아오기
+        MemberDto memberDto = memberService.updateUser(userId, modifyDto, file);
+
+        return new DtoData(HttpStatus.OK.value(), true, memberDto);
     }
 
 }

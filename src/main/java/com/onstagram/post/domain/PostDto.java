@@ -21,7 +21,7 @@ public class PostDto {
     @NotEmpty(message = "게시물 설명은 작성")
     private String caption; //게시물 설명
     
-    private String postImg; //게시물 사진 리스트
+    private String postImg; //게시물 사진
 
     private Long likeCount; //좋아요 개수
 
@@ -35,6 +35,10 @@ public class PostDto {
         postImg = postEntity.getPostImg();
         likeCount = postEntity.getLikeCount();
         postDate = postEntity.getPostDate();
+    }
+
+    public void modifyDto(PostModifyDto postModifyDto) {
+        caption = postModifyDto.getCaption();
     }
 
 }

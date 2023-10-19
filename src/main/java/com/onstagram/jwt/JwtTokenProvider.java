@@ -1,10 +1,13 @@
 package com.onstagram.jwt;
 
+import com.onstagram.exception.OnstagramException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +21,7 @@ import java.util.Date;
 
 @RequiredArgsConstructor
 @Component
+@Log4j2
 public class JwtTokenProvider {
 
     private String secretKey = "onstagram"; // onstagram
@@ -75,7 +79,13 @@ public class JwtTokenProvider {
 
     // Request의 Header에서 token 값 가져오기
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("TOKEN");
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            log.info("토큰은 있음");
+            return bearerToken.substring(7); // "Bearer " 부분을 제외하고 토큰을 반환
+        }
+        log.info("토큰이 없다.");
+        throw new OnstagramException(HttpStatus.BAD_REQUEST.value(), "토큰이 없습니다.");
     }
 
 }

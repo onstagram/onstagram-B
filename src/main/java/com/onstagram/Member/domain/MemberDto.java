@@ -42,4 +42,10 @@ public class MemberDto {
         introduction = memberEntity.getIntroduction();
         userDate = memberEntity.getUserDate();
     }
+
+    public void modifyDto(ModifyDto modifyDto) {
+        password = modifyDto.getPassword();
+        userImg = modifyDto.getUserImg();
+        introduction = modifyDto.getIntroduction();
+    }
 }
