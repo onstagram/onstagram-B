@@ -36,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
-    @Override
+    @Override //댓글 삭제
     public void delete(Long commentId) {
         try {
             commentRepository.deleteById(commentId);

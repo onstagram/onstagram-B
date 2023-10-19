@@ -136,13 +136,13 @@ public class PostController {
         String token = jwtTokenProvider.resolveToken(request);
         Long id = jwtTokenProvider.getUserIdFromToken(token);
 
-        log.info("토큰명 : " + token);
-        log.info("회원아이디 :" + id);
+//        log.info("토큰명 : " + token);
+//        log.info("회원아이디 :" + id);
 
-        log.info("게시물 등록 들어옴");
+//        log.info("게시물 등록 들어옴");
 
         //회원아이디 회원 엔터티에 저장
-        MemberEntity memberEntity = MemberEntity.builder().userId(id).build();
+        MemberEntity memberEntity = MemberEntity.builder().userId(postDto.getUserId()).build();
 
         //게시물 사진 업로드 시작
         //이미지 파일인지 확인

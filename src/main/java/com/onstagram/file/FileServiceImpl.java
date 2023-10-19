@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Service
 @Log4j2
@@ -33,6 +35,8 @@ public class FileServiceImpl implements FileService {
         try {
 
             String fileName = file.getOriginalFilename(); // 선택한 파일명을 가져옴
+            String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
+
             fileName = path + "/" + fileName;//파일명 앞에 저장 경로 설정(게시물, 회원)
 
             ObjectMetadata metadata = new ObjectMetadata(); // S3 객체 메타데이터 생성

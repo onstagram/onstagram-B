@@ -60,6 +60,7 @@ public class CommentController {
     @DeleteMapping("/delete/{commentId}")
     public HttpStatus commentDelete(@PathVariable("commentId") Long commentId) {
         log.info("댓글 삭제 시작");
+        commentService.delete(commentId);
         return HttpStatus.OK;
     }
 

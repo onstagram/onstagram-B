@@ -90,7 +90,7 @@ public class MemberController {
 
     }
 
-    @PostMapping("/login") //로그인-(ok)
+    @PostMapping("/Login") //로그인-(ok)
     public ResponseEntity<String> login(@RequestBody SignInDto signinDto) {
         log.info("로그인 시작");
         try {
@@ -99,12 +99,13 @@ public class MemberController {
             if(token != null) {
                 HttpHeaders httpHeaderseaders = new HttpHeaders();
                 httpHeaderseaders.set("TOKEN", token);
-                return new ResponseEntity<>("success", httpHeaderseaders, HttpStatus.OK);
+
+                return new ResponseEntity<>(token, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("fail", null,HttpStatus.BAD_REQUEST);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("토큰 생성 실패");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("fail");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("로그인 실패");
         }
     }
 
