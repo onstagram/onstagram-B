@@ -1,6 +1,7 @@
 package com.onstagram.post.controller;
 
 import com.onstagram.DtoData;
+import com.onstagram.PostDataList;
 import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.service.MemberService;
@@ -12,17 +13,14 @@ import com.onstagram.post.domain.PostDto;
 import com.onstagram.post.domain.PostModifyDto;
 import com.onstagram.post.entity.PostEntity;
 import com.onstagram.post.service.PostService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -65,24 +63,11 @@ public class PostController {
     //게시물 목록
     //전체 게시물에서 likeCount가 많은순으로 게시물 조회
     //게시물 목록(팔로우한 사람 게시물만 조회) --> 메인
-    @GetMapping("/postList")
-    public DtoData postList(HttpServletRequest request) {
+    @GetMapping("/postList") //일단 전체 게시물 조회(본인 제외)
+    public PostDataList postList(HttpServletRequest request) {
         Long userId = memberService.getUserId(request);
-
-        //내가 팔로우한 아이디 조회
-
-
-        //팔로우한 아이디를 가지고 게시글 전부 불러오기
-//        for(Long id : followingId) {
-//            List<PostDto> postDtoList = postService.postList(id);
-
-
-
-
-//        }
-        /////////////////
-
-        return null;
+        List<PostDto> postDtoList = postService.postList(userId);
+        return new PostDataList(HttpStatus.OK.value(), true,postDtoList);
     }
 
 //    @GetMapping("")
@@ -143,7 +128,6 @@ public class PostController {
         String token = jwtTokenProvider.resolveToken(request);
         Long id = jwtTokenProvider.getUserIdFromToken(token);
 
-//        log.info("토큰명 : " + token);
         log.info("회원아이디 :" + postDto.getPostId());
         log.info("게시물 등록 들어옴");
 
@@ -154,14 +138,9 @@ public class PostController {
         //이미지 파일인지 확인
         if (!file.getContentType().startsWith("image")) {
             throw new OnstagramException(HttpStatus.BAD_REQUEST.value(), "이미지 파일 아님");
-//            return "이미지 파일이 아니다"; **
         }
         //S3에 파일 업로드
         String postImg = fileService.FileUpload(file,"post");
-
-//        if(postImg == null) { **
-//            return "이미지 업로드를 실패했습니다.";
-//        }
 
         PostEntity postEntity = PostEntity.builder()
                 .caption(postDto.getCaption()) //게시물 설명
@@ -171,7 +150,6 @@ public class PostController {
                 .build();
 
         PostEntity postDB = postService.AddPost(postEntity); //게시물 등록
-//        PostDto postDto1 = PostDto.builder().postEntity(postDB).build(); //게시물 등록한 entity정보를 dto에 담아서 리턴
 
         if(postDB != null) { // 성공
             return "게시물 등록 성공";

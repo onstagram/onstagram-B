@@ -124,10 +124,12 @@ public class MemberServiceImpl implements MemberService {
         String userImg; //수정할 이미지
 
         if (!file.isEmpty()) { //수정할 파일이 있으면
+            log.info("수정할 파일이 있다.");
             String filename = file.getOriginalFilename(); //수정한 파일명
             userImg = fileService.FileUpload(file, path); //path(member)경로에 파일 업로드 후 url 받기
         } else {
-            userImg = modifyDto.getUserImg();//수정할 파일이 없으면 기존 파일 url 그대로 사용.
+            userImg = memberEntity.getUserImg();//수정할 파일이 없으면 기존 파일 url 그대로 사용.
+            log.info("수정할 파일이 없다 --> " + userImg);
         }
 
         //최종 수정한 이미지명, 비밀번호, 자기소개 값을 dto에 넣기

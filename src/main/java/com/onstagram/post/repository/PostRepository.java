@@ -14,6 +14,10 @@ public interface PostRepository extends JpaRepository<PostEntity,Long> {
     @Query("SELECT p FROM PostEntity p WHERE p.postId = :postId") //게시물 아이디로 게시물 정보 조회
     public List<PostEntity> postList(@Param("postId") Long postId);
 
+    @Query("SELECT p FROM PostEntity p WHERE p.memberEntity.userId <> :userId") //본인제외 모든 게시물 조회
+    public List<PostEntity> findUsersWithUserIdNotEqualToOne(@Param("userId") Long userId);
+
+
 //    "A"가 "B"를 구독(팔로우)하는 경우:
 //    "A"의 아이디가 팔로잉(following) 목록에 추가됩니다.
 //    "B"의 아이디가 팔로워(follower) 목록에 추가됩니다.

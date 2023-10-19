@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,11 +54,19 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    @Override //회원의 전체 게시물
+    @Override //회원의 전체 게시물(본인 제외)
     public List<PostDto> postList(Long userId) {
-
-        return null;
-
+        List<PostDto> postDtoList = new ArrayList<>();
+        try {
+            List<PostEntity> postEntityList = postRepository.findUsersWithUserIdNotEqualToOne(userId);
+            for(PostEntity postEntity : postEntityList) { //Entity를 하나씩 꺼내서 -> Dto 매핑(변환)
+                postDtoList.add(PostDto.builder().postEntity(postEntity).build()); //list에 넣기
+            }
+            return postDtoList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new OnstagramException(HttpStatus.BAD_REQUEST.value(),"게시물 조회 실패");
+        }
     }
 
     @Override
