@@ -175,7 +175,7 @@ public class MemberServiceImpl implements MemberService {
             Long followcount = followRepository.countFollowers(userId); //팔로우 개수
             Long followingcoung = followRepository.countFollowing(userId); //팔로잉 개수
 
-            return new MypageDto(memberDto,postDtoListlist,followcount,followingcoung);
+            return new MypageDto(memberDto,postDtoListlist,followcount,followingcoung,0);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -183,6 +183,12 @@ public class MemberServiceImpl implements MemberService {
         }
 
 
+    }
+
+    @Override
+    public int followCheck(Long userId, Long loginId) {
+        boolean check = followRepository.followCheck(userId,loginId);
+        return check ? 1 : 2; //팔로우했으면 1, 안했으면 2
     }
 
 

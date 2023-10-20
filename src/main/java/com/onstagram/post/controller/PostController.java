@@ -73,6 +73,7 @@ public class PostController {
 
         PostDto postDto = PostDto.builder().postEntity(postEntity).build(); //게시글 정보
         MemberDto memberDto = MemberDto.builder().memberEntity(postEntity.getMemberEntity()).build(); //회원정보
+
         //댓글 정보
         List<CommentDto> commentDtoList = postService.commemtList(postId); //게시물의 댓글 목록
 
@@ -134,11 +135,13 @@ public class PostController {
         return new DtoData(HttpStatus.OK.value(), true, postDto);
     }
 
-    @DeleteMapping("/delete") //게시물 삭제
-    public DtoData postDelete(@RequestParam Long postId) {
-        log.info("postId : " + postId);
-        postService.postDelete(postId);
+    
+    @DeleteMapping("/remove") //게시물 삭제
+    public DtoData postDelete(@RequestBody PostDto postDto) {
+        log.info("postId : " + postDto.getPostId());
+        postService.postDelete(postDto.getPostId());
         return new DtoData(HttpStatus.OK.value(),true,null);
     }
+    
 
 }

@@ -21,6 +21,11 @@ public interface FollowRepository extends JpaRepository<FollowEntity,Long> {
     public Long countFollowing(@Param("userId") Long userId);
 
 
+    //팔로우 여부 확인(팔로우 관계) loginId가userId를 팔로우했는지
+    @Query("SELECT CASE WHEN COUNT(f) > 0 THEN true ELSE false END FROM FollowEntity f " +
+            "WHERE f.followingMemberEntity.userId = :userId AND f.followMemberEntity.userId = :loginId")
+    boolean followCheck(@Param("loginId") Long loginId, @Param("userId") Long userId);
+
 
 
 }

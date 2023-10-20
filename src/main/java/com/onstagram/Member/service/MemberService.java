@@ -17,6 +17,8 @@ public interface MemberService {
 
     public MypageDto profileInfo(Long userId); //해당 프로필의 정보
 
+    public int followCheck(Long userId, Long loginId); //팔로우했는지 체크
+
 //    public List<PostDto> findById(Long id); //해당 계정 회원의 모든 게시물
 //
 //

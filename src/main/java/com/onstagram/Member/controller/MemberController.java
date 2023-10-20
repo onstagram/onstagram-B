@@ -67,10 +67,17 @@ public class MemberController {
 
         //해당 게시글 작성자의 회원 정보, 게시글 정보
         MypageDto mypageDto = memberService.profileInfo(userId);
-
-        boolean mo = loginId.equals(mypageDto.getMemberDto().getUserId()); //로그인한 아이디와 이동한 페이지의 계정이 같으면 true
-
-        return new DtoData(HttpStatus.OK.value(), mo, mypageDto);
+        Long pageId = mypageDto.getMemberDto().getUserId(); //프로필 주인
+        int check = loginId.equals(pageId) ? 0 : memberService.followCheck(userId,loginId);
+//        if(loginId.equals(pageId)) {
+//            log.info("로그인 회원 = 페이지 회원");
+//            check = 0;
+//        }
+//        else {
+//            check = memberService.followCheck(userId,loginId);
+//        }
+        mypageDto.followCheck(check);
+        return new DtoData(HttpStatus.OK.value(), true, mypageDto);
     }
 
     @PostMapping("/login") //로그인-(ok)
