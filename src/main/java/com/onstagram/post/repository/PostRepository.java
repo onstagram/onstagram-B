@@ -1,5 +1,6 @@
 package com.onstagram.post.repository;
 
+import com.onstagram.comment.entity.CommentEntity;
 import com.onstagram.post.entity.PostEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -7,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<PostEntity,Long> {
@@ -16,6 +18,17 @@ public interface PostRepository extends JpaRepository<PostEntity,Long> {
 
     @Query("SELECT p FROM PostEntity p WHERE p.memberEntity.userId <> :userId") //본인제외 모든 게시물 조회
     public List<PostEntity> findUsersWithUserIdNotEqualToOne(@Param("userId") Long userId);
+
+    @Query("SELECT p FROM PostEntity p WHERE p.memberEntity.userId <> :userId") //본인 모든 게시물 조회
+    public List<PostEntity> findUserPost(@Param("userId") Long userId);
+
+    // 게시글(Post)과 작성자(Member) 정보를 함께 조회하는 쿼리
+    @Query("SELECT p FROM PostEntity p JOIN FETCH p.memberEntity m WHERE p.postId = :postId")
+    public Optional<PostEntity> findPostWithUserByPostId(@Param("postId") Long postId);
+
+    @Query("SELECT c FROM CommentEntity c WHERE c.postEntity.postId = :postId")
+    public List<CommentEntity> findByAllPostId(@Param("postId") Long postId); //게시글의 댓글 목록
+
 
 
 //    "A"가 "B"를 구독(팔로우)하는 경우:

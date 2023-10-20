@@ -22,10 +22,10 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
+        log.info("헤더에서 토큰받기");
         // 헤더에서 토큰 받아오기
-        log.info("헤더에서 토큰받아오기 실행****************************************");
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
-        log.info("토큰값은 ?????????  : " + token);
+
         // 토큰이 유효하다면
         if (token != null && jwtTokenProvider.validateToken(token)) {
             // 토큰으로 부터 유저 정보를 받아
@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             // SecurityContext에 객체 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-
+        log.info("doFilter실행");
         // Filter 실행
         chain.doFilter(request, response);
     }

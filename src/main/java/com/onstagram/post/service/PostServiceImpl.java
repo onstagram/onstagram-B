@@ -1,6 +1,8 @@
 package com.onstagram.post.service;
 
-import com.onstagram.Member.domain.ModifyDto;
+import com.onstagram.comment.domain.CommentDto;
+import com.onstagram.comment.entity.CommentEntity;
+import com.onstagram.comment.repository.CommentRepository;
 import com.onstagram.exception.OnstagramException;
 import com.onstagram.post.domain.PostDto;
 import com.onstagram.post.domain.PostModifyDto;
@@ -28,7 +30,8 @@ public class PostServiceImpl implements PostService {
         if(postEntity.isPresent()) {
             return postEntity.orElse(null);
         } else {
-            return null;
+            throw new OnstagramException(HttpStatus.NOT_FOUND.value(), "회원정보를 받아올 수 없습니다.");
+//            return null;
         }
     }
 
@@ -80,6 +83,51 @@ public class PostServiceImpl implements PostService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new OnstagramException(HttpStatus.BAD_REQUEST.value(), "게시물 정보 수정 실패");
+        }
+    }
+
+    @Override
+    public void postDelete(Long postId) {
+        try {
+            postRepository.deleteById(postId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new OnstagramException(HttpStatus.BAD_REQUEST.value(),"삭제 실패");
+        }
+    }
+
+    @Override
+    public PostEntity postAndUserInfo(Long postId) {
+        try {
+            Optional<PostEntity> postEntity = postRepository.findPostWithUserByPostId(postId);
+            if(postEntity.isPresent()) {
+                return postEntity.orElse(null);
+            }else {
+                throw new OnstagramException(HttpStatus.BAD_REQUEST.value(),"값이 비어있다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new OnstagramException(HttpStatus.BAD_REQUEST.value(), "게시물&작성자 조회 실패");
+        }
+    }
+
+    @Override
+    public List<CommentDto> commemtList(Long postId) {
+        
+        List<CommentDto> list = new ArrayList<>();
+        
+        try {
+            List<CommentEntity> commentEntityList = postRepository.findByAllPostId(postId);
+            
+            for(CommentEntity comment : commentEntityList) {
+                list.add(CommentDto.builder().commentEntity(comment).build());
+            }
+            
+            return list; //댓글 정보를 전송
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new OnstagramException(HttpStatus.BAD_REQUEST.value(), "실패");
         }
     }
 

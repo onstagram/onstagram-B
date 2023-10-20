@@ -1,6 +1,7 @@
 package com.onstagram.Member.repository;
 
 import com.onstagram.Member.entity.MemberEntity;
+import com.onstagram.post.entity.PostEntity;
 
 import java.util.List;
 
@@ -8,6 +9,13 @@ public interface MemberRepository {
     public void save(MemberEntity memberEntity); // 회원가입 - ok
     public List<MemberEntity> findOneByEmail(String email); //아이디 중복체크 및 로그인
     public List<MemberEntity> findById(Long userId); //해당 회원 정보
+
+
+
+
+
+
+//    public List<PostEntity> fingByUserId(Long userId); //해당 회원의 게시물 정보(목록)
 
 
 

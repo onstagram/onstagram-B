@@ -1,6 +1,7 @@
 package com.onstagram.Member.repository;
 
 import com.onstagram.Member.entity.MemberEntity;
+import com.onstagram.post.entity.PostEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -31,6 +32,13 @@ public class MemberRepositoryImpl implements MemberRepository {
                 .setParameter("userId", userId)
                 .getResultList();
     }
+//
+//    @Override
+//    public List<PostEntity> fingByUserId(Long userId) {
+//        em.createQuery("select p from PostEntity p where p.memberEntity.id :userId", MemberEntity.class)
+//                .setParameter("userId",userId).getResultList();
+//        return null;
+//    }
 
 //    @Override
 //    public List<MemberEntity> findByEmail(String email) { //로그인 아이디 값

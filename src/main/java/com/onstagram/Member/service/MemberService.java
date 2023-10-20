@@ -1,9 +1,6 @@
 package com.onstagram.Member.service;
 
-import com.onstagram.Member.domain.MemberDetail;
-import com.onstagram.Member.domain.MemberDto;
-import com.onstagram.Member.domain.ModifyDto;
-import com.onstagram.Member.domain.SignInDto;
+import com.onstagram.Member.domain.*;
 import com.onstagram.Member.entity.MemberEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +14,8 @@ public interface MemberService {
     public String signin(SignInDto signInDto); //로그인(토큰값 반환)
     public MemberDto findById(Long userId); //회원 정보
     public MemberDto updateUser(Long userId, ModifyDto modifyDto, MultipartFile file); //회원정보수정
+
+    public MypageDto profileInfo(Long userId); //해당 프로필의 정보
 
 //    public List<PostDto> findById(Long id); //해당 계정 회원의 모든 게시물
 //

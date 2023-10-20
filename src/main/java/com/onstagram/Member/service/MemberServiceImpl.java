@@ -2,12 +2,18 @@ package com.onstagram.Member.service;
 
 import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.domain.ModifyDto;
+import com.onstagram.Member.domain.MypageDto;
 import com.onstagram.Member.domain.SignInDto;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.repository.MemberRepository;
 import com.onstagram.exception.OnstagramException;
 import com.onstagram.file.FileService;
+import com.onstagram.follow.entity.FollowEntity;
+import com.onstagram.follow.repository.FollowRepository;
 import com.onstagram.jwt.JwtTokenProvider;
+import com.onstagram.post.domain.PostDto;
+import com.onstagram.post.entity.PostEntity;
+import com.onstagram.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -17,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,8 +33,11 @@ import java.util.List;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final PostRepository postRepository;
+    private final FollowRepository followRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder; //비밀 번호 암호화
-    private final JwtTokenProvider jwtTokenProvider; //토큰 생성하기 위해
+    private final JwtTokenProvider jwtTokenProvider;
+    //토큰 생성하기 위해
     private final FileService fileService;//파일 업로드 or 삭제하기 위해
     String path = "member"; //회원 사진 저장 경로
     
@@ -39,7 +49,6 @@ public class MemberServiceImpl implements MemberService {
         log.info("토큰값 : " + token);
 
         if (token != null && jwtTokenProvider.validateToken(token)) { //토큰이 있고 유효기간이 남았으면
-            log.info("토큰 유효 가능");
             Long userId = jwtTokenProvider.getUserIdFromToken(token);
             return userId;
         }
@@ -47,7 +56,6 @@ public class MemberServiceImpl implements MemberService {
             throw new OnstagramException(HttpStatus.REQUEST_TIMEOUT.value(), "토큰 값이 없다.");
         }
         else {
-            log.info("토큰 유효 불가능");
             throw new OnstagramException(HttpStatus.REQUEST_TIMEOUT.value(), "토큰 유효기간 만료");
         }
     }
@@ -146,5 +154,36 @@ public class MemberServiceImpl implements MemberService {
         }
 
     }
+
+    @Override
+    public MypageDto profileInfo(Long userId) { //해당 회원의 프로필
+
+        try {
+            //해당 회원의 정보
+            MemberDto memberDto = MemberDto.builder()
+                    .memberEntity(memberRepository.findById(userId).get(0)).build();
+
+            List<PostDto> postDtoListlist = new ArrayList<>();
+            //해당 회원의 게시물 목록
+            for(PostEntity postEntity : postRepository.findUserPost(userId)) {
+                postDtoListlist.add(PostDto.builder()
+                        .postEntity(postEntity)
+                        .build());
+            }
+
+            //해당 회원의 팔로우 정보
+            Long followcount = followRepository.countFollowers(userId); //팔로우 개수
+            Long followingcoung = followRepository.countFollowing(userId); //팔로잉 개수
+
+            return new MypageDto(memberDto,postDtoListlist,followcount,followingcoung);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new OnstagramException(HttpStatus.BAD_REQUEST.value(), "실패");
+        }
+
+
+    }
+
 
 }

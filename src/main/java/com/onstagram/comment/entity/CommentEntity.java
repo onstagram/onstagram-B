@@ -38,6 +38,4 @@ public class CommentEntity {
         this.commentDate = LocalDate.now();
     }
 
-
-
 }
