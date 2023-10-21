@@ -32,7 +32,6 @@ public class MemberController {
         if (result.hasErrors()) {
             log.info("이곳은 빈칸 에러입니다.");
             throw new OnstagramException(HttpStatus.NO_CONTENT.value(), "입력안된 값이 있습니다.");
-//            return HttpStatus.BAD_REQUEST; //에러코드(400)
         }
 
         boolean idCheck = memberService.IdCheck(memberDto.getEmail()); //아이디 중복체크(true : 중복 , false : 중복X)
@@ -40,10 +39,10 @@ public class MemberController {
         if (idCheck) {
             log.info("중복 아이디 존재");
             throw new OnstagramException(HttpStatus.CONFLICT.value(), "아이디 중복"); //409에러
-//            return HttpStatus.CONFLICT; //에러코드(400)
         }
 
         MemberEntity memberEntity = memberDto.toEntity();
+        memberEntity.introduction("");
 
         try {
             memberService.join(memberEntity); //회원가입 시작
@@ -66,17 +65,12 @@ public class MemberController {
         Long loginId = memberService.getUserId(request); //로그인한 유저의 아이디
 
         //해당 게시글 작성자의 회원 정보, 게시글 정보
-        MypageDto mypageDto = memberService.profileInfo(userId);
-        Long pageId = mypageDto.getMemberDto().getUserId(); //프로필 주인
-        int check = loginId.equals(pageId) ? 0 : memberService.followCheck(userId,loginId);
-//        if(loginId.equals(pageId)) {
-//            log.info("로그인 회원 = 페이지 회원");
-//            check = 0;
-//        }
-//        else {
-//            check = memberService.followCheck(userId,loginId);
-//        }
-        mypageDto.followCheck(check);
+        MypageDto mypageDto = memberService.profileInfo(userId,loginId);
+//        Long pageId = mypageDto.getMemberDto().getUserId(); //프로필 주인
+//        int check = loginId.equals(pageId) ? 0 : memberService.followCheck(userId,loginId);
+
+
+//        mypageDto.followCheck(check);
         return new DtoData(HttpStatus.OK.value(), true, mypageDto);
     }
 

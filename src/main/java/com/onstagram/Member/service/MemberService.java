@@ -15,7 +15,7 @@ public interface MemberService {
     public MemberDto findById(Long userId); //회원 정보
     public MemberDto updateUser(Long userId, ModifyDto modifyDto, MultipartFile file); //회원정보수정
 
-    public MypageDto profileInfo(Long userId); //해당 프로필의 정보
+    public MypageDto profileInfo(Long userId, Long loginId); //해당 프로필의 정보
 
     public int followCheck(Long userId, Long loginId); //팔로우했는지 체크
 

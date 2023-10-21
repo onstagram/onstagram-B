@@ -1,8 +1,10 @@
 package com.onstagram.post.repository;
 
+import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.comment.entity.CommentEntity;
 import com.onstagram.post.entity.PostEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -28,6 +30,24 @@ public interface PostRepository extends JpaRepository<PostEntity,Long> {
 
     @Query("SELECT c FROM CommentEntity c WHERE c.postEntity.postId = :postId")
     public List<CommentEntity> findByAllPostId(@Param("postId") Long postId); //게시글의 댓글 목록
+
+    @Query("SELECT m FROM MemberEntity m WHERE m.userId = :userId")
+    public List<MemberEntity> findByUserId(@Param("userId") Long userId); //게시글의 댓글 목록
+
+    @Modifying
+    @Query("DELETE FROM LikeEntity l WHERE l.postEntity.postId = :postId")
+    public int deleteByPostId(@Param("postId") Long postId); // 게시글에 대한 좋아요 데이터 삭제
+
+    @Modifying
+    @Query("DELETE FROM CommentEntity c WHERE c.postEntity.postId = :postId")
+    public int CommentDelete(@Param("postId") Long postId); // 게시글에 대한 댓글 데이터 삭제
+
+    @Query("SELECT COUNT(l) FROM LikeEntity l WHERE l.postEntity.postId <> :postId") //좋아요 테이블에 있는 게시물 개수
+    public int findByLikeId(@Param("postId") Long postId);
+
+    @Query("SELECT COUNT(c) FROM CommentEntity c WHERE c.postEntity.postId <> :postId") //좋아요 테이블에 있는 게시물 개수
+    public int findByCommentId(@Param("postId") Long postId);
+
 
 
 

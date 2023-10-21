@@ -1,5 +1,6 @@
 package com.onstagram.post.service;
 
+import com.onstagram.Member.domain.MemberDto;
 import com.onstagram.Member.domain.ModifyDto;
 import com.onstagram.comment.domain.CommentDto;
 import com.onstagram.post.domain.PostDto;

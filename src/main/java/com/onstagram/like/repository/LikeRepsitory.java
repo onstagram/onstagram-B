@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface LikeRepsitory extends JpaRepository<LikeEntity, Long> {
     public LikeEntity save(LikeEntity likeEntity);
     public void deleteById(Long likeId);
+//    public void deleteByPostId(Long postId);
 }

@@ -1,15 +1,18 @@
 package com.onstagram.config;
 
+import com.onstagram.jwt.JwtAuthenticationFilter;
 import com.onstagram.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -19,6 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 @Log4j2
 public class SecurityConfig {
+
     private final JwtTokenProvider jwtTokenProvider;
     @Bean //비밀번호 암호화
     public BCryptPasswordEncoder passwordEncoder() {
@@ -46,24 +50,25 @@ public class SecurityConfig {
 
                 // URL 관리
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()
-                .anyRequest().permitAll();
-//                .antMatchers("/signup", "/signin", "/").permitAll()
-//                .anyRequest().hasRole("USER") //위에 URL외에는 USER라는 권한만 허용
+                .antMatchers("/**").permitAll();
+//                .anyRequest().permitAll()
+//                .antMatchers("/", "/signin","/login").permitAll() //회원가입, 로그인, 메인페이지만 모든 권한 설정
+//                .antMatchers("/user/**").hasRole("USER") ///user/이후 주소는 모두 "USER"라는 권한을 가진 회원만 접근 허용
+//                .anyRequest().permitAll()//위에 URL외에는 USER라는 권한만 허용
 //                .anyRequest().authenticated() //authenticated() : 로그인 인증만 해야됨
 //                .and()
-
+//
 //                .formLogin() // ->  API 서버와 같이 로그인 페이지가 필요하지 않거나, 다른 로그인 메커니즘을 사용해야 하는 경우에는 .formLogin()을 사용하지 않을 수 있습니다.
 //                    .loginPage("/login") // 로그인 페이지 지정
-////                    .permitAll() // 로그인 페이지는 모두 허용
+//                    .permitAll() // 로그인 페이지는 모두 허용
 //                    .defaultSuccessUrl("/") // 로그인 성공 후 이동할 페이지
-//                    .and()
-
+//                .and()
+//
 //                .logout()
 //                    .permitAll() // 로그아웃은 모두 허용
 //                .and()
-
-                // JwtAuthenticationFilter를 먼저 적용
+//
+////                 JwtAuthenticationFilter를 먼저 적용
 //                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

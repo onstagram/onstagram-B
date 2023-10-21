@@ -48,4 +48,5 @@ public class MemberDto {
         userImg = modifyDto.getUserImg();
         introduction = modifyDto.getIntroduction();
     }
+
 }

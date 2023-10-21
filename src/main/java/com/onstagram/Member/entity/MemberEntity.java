@@ -57,5 +57,9 @@ public class MemberEntity {
         introduction = modifyDto.getIntroduction();
     }
 
+    public void introduction(String introductionDefault) {
+        introduction = introductionDefault;
+    }
+
 
 }

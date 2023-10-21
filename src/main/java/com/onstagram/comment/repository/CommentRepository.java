@@ -12,5 +12,7 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
     @Query("SELECT c FROM CommentEntity c WHERE c.postEntity.postId = :postId")
     List<CommentEntity> findAllByPostId(@Param("postId") Long postId);//게시글의 댓글 목록
+//
+//    public void deleteByPostId(Long postId);//게시글 삭제
 
 }

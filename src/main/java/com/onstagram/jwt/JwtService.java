@@ -22,7 +22,7 @@ import java.util.List;
 public class JwtService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-//    private final BCryptPasswordEncoder bCryptPasswordEncoder; //비밀 번호 암호화
+    private final BCryptPasswordEncoder bCryptPasswordEncoder; //비밀 번호 암호화
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -33,7 +33,7 @@ public class JwtService implements UserDetailsService {
         log.info("로그인 회원의 정보 크기 : " + members.size());
 
         if (!members.isEmpty()) {
-            log.info("로그인한 회원의 정보가 있다");
+            log.info("로그인한 아이디의 회원의 정보가 있다");
             // 여기서 비밀번호 확인
 
 //            if (bCryptPasswordEncoder.matches("사용자가 입력한 비밀번호", members.get(0).getPassword())) {
@@ -46,7 +46,7 @@ public class JwtService implements UserDetailsService {
         } else {
             log.info("회원정보 x");
             var notFound = HttpStatus.NOT_FOUND;
-            throw new UsernameNotFoundException("사용자를 찾을 수 업습니다.");
+            throw new UsernameNotFoundException("사용자를 찾을 수 없다.");
         }
     }
 

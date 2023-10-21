@@ -3,21 +3,18 @@ package com.onstagram.comment.service;
 
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.repository.MemberRepository;
-import com.onstagram.Member.service.MemberService;
 import com.onstagram.comment.domain.CommentDto;
 import com.onstagram.comment.entity.CommentEntity;
 import com.onstagram.comment.repository.CommentRepository;
 import com.onstagram.exception.OnstagramException;
 import com.onstagram.post.entity.PostEntity;
 import com.onstagram.post.repository.PostRepository;
-import com.onstagram.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -68,16 +65,5 @@ public class CommentServiceImpl implements CommentService {
             e.printStackTrace();
         }
     }
-
-//    @Override //해당 댓글 정보
-//    public Optional<CommentEntity> findById(Long commentId) {
-//        try {
-//            CommentEntity commentEntity = commentRepository.getById(commentId);
-//            return Optional.of(commentRepository.getById(commentId)); //commentId값에 대한 데이터가 없으면 빈객체를 반환
-//        } catch (Exception e) {
-////            e.printStackTrace();
-//            return Optional.empty(); //빈객체 반환
-//        }
-//    }
 
 }

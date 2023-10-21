@@ -49,12 +49,12 @@ public class FileServiceImpl implements FileService {
             e.printStackTrace();
             log.info("S3 업로드 실패");
             throw new OnstagramException(HttpStatus.BAD_REQUEST.value(), "파일 업로드 실패");
-//            return null; //실패
         }
     }
 
-//    @Override //파일 삭제
-//    public void DeleteFile(String fileName) {
-//        amazonS3Client.deleteObject(bucket, fileName);
-//    }
+    @Override //파일 삭제
+    public void DeleteFile(String fileName) {
+        log.info("파일삭제 들어옴");
+        amazonS3Client.deleteObject(bucket, fileName);
+    }
 }

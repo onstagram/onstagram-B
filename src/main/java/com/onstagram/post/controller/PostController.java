@@ -88,17 +88,13 @@ public class PostController {
     public DtoData register(@RequestParam("file") MultipartFile file, @ModelAttribute PostDto postDto,
                            HttpServletRequest request) {
 
-        String token = jwtTokenProvider.resolveToken(request);
-        Long id = jwtTokenProvider.getUserIdFromToken(token);
+        String token = jwtTokenProvider.resolveToken(request); //토큰 받아 오기
+        Long userId = jwtTokenProvider.getUserIdFromToken(token); //토큰으로 아이디 받아 오기
 
-        log.info("회원아이디 :" + postDto.getPostId());
         log.info("게시물 등록 들어옴");
 
-        postService.findById(id);
-
         //회원아이디 회원 엔터티에 저장
-//        MemberEntity memberEntity = MemberEntity.builder().userId(id).build();
-        MemberEntity memberEntity = memberRepository.findById(id).get(0);
+        MemberEntity memberEntity = memberRepository.findById(userId).get(0);
 
         //게시물 사진 업로드 시작
         //이미지 파일인지 확인
@@ -131,6 +127,7 @@ public class PostController {
 
     @PutMapping("/edit") //게시물 수정
     public DtoData postModify(@RequestBody PostModifyDto postModifyDto) {
+        //게시물 정보
         PostDto postDto = postService.postModify(postModifyDto);
         return new DtoData(HttpStatus.OK.value(), true, postDto);
     }

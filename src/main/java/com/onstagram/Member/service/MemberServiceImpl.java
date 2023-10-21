@@ -1,20 +1,17 @@
 package com.onstagram.Member.service;
 
-import com.onstagram.Member.domain.MemberDto;
-import com.onstagram.Member.domain.ModifyDto;
-import com.onstagram.Member.domain.MypageDto;
-import com.onstagram.Member.domain.SignInDto;
+import com.onstagram.Member.domain.*;
 import com.onstagram.Member.entity.MemberEntity;
 import com.onstagram.Member.repository.MemberRepository;
 import com.onstagram.exception.OnstagramException;
 import com.onstagram.file.FileService;
-import com.onstagram.follow.entity.FollowEntity;
 import com.onstagram.follow.repository.FollowRepository;
 import com.onstagram.jwt.JwtTokenProvider;
 import com.onstagram.post.domain.PostDto;
 import com.onstagram.post.entity.PostEntity;
 import com.onstagram.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,7 +36,12 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     //토큰 생성하기 위해
     private final FileService fileService;//파일 업로드 or 삭제하기 위해
-    String path = "member"; //회원 사진 저장 경로
+
+//    @org.springframework.beans.factory.annotation.Value("${spring.member.path}")
+    private String path = "member"; //회원 사진 저장 경로
+//
+//    @org.springframework.beans.factory.annotation.Value("${spring.member.fileName}")
+    private String defaultFileName = "default.png"; //회원 기본 이미지 파일명
     
     @Override
     public Long getUserId(HttpServletRequest request) { //토큰 받아와서 아이디 값 리턴
@@ -132,14 +134,20 @@ public class MemberServiceImpl implements MemberService {
         String userImg; //수정할 이미지
 
         if (!file.isEmpty()) { //수정할 파일이 있으면
-            log.info("수정할 파일이 있다.");
-            String filename = file.getOriginalFilename(); //수정한 파일명
+
+            String[] str = memberEntity.getUserImg().split("/");
+            String oldImg = str[str.length-1];
+
+            if(!oldImg.equals(defaultFileName)) { //기존(수정전)이미지가 default.png인 기본이미지이면 삭제
+                fileService.DeleteFile(path + "/" + oldImg); //기존에 이미지 삭제
+            }
             userImg = fileService.FileUpload(file, path); //path(member)경로에 파일 업로드 후 url 받기
+
         } else {
             userImg = memberEntity.getUserImg();//수정할 파일이 없으면 기존 파일 url 그대로 사용.
-            log.info("수정할 파일이 없다 --> " + userImg);
         }
 
+        String intro = modifyDto.getIntroduction().isEmpty() ? "" : modifyDto.getIntroduction();
         //최종 수정한 이미지명, 비밀번호, 자기소개 값을 dto에 넣기
         modifyDto = new ModifyDto(encodePassword, userImg, modifyDto.getIntroduction());
         //기존에 회원정보인 memberEntity 값의 수정할 값인 NewModifyDto 값만 변경해주기
@@ -156,7 +164,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MypageDto profileInfo(Long userId) { //해당 회원의 프로필
+    public MypageDto profileInfo(Long userId, Long loginId) { //해당 회원의 프로필
 
         try {
             //해당 회원의 정보
@@ -172,10 +180,15 @@ public class MemberServiceImpl implements MemberService {
             }
 
             //해당 회원의 팔로우 정보
-            Long followcount = followRepository.countFollowers(userId); //팔로우 개수
-            Long followingcoung = followRepository.countFollowing(userId); //팔로잉 개수
+            int followcount = followRepository.countFollowers(userId); //팔로우 개수
+            int followingcount = followRepository.countFollowing(userId); //팔로잉 개수
 
-            return new MypageDto(memberDto,postDtoListlist,followcount,followingcoung,0);
+            Long pageId = memberDto.getUserId(); //프로필 주인
+            int check = loginId.equals(pageId) ? 0 : followCheck(userId,loginId);
+
+            FollowInfo followInfo = new FollowInfo(followcount, followingcount , check);
+
+            return new MypageDto(memberDto,postDtoListlist,followInfo);
 
         } catch (Exception e) {
             e.printStackTrace();
