@@ -9,9 +9,9 @@
 #oracle
 spring:
   datasource:
-    url: jdbc:oracle:thin:@localhost:1521:orcl
-    username: onstagram
-    password: 123
+    url:
+    username:
+    password: 
     driver-class-name: oracle.jdbc.OracleDriver
 
 
