@@ -1,0 +1,6 @@
+spring:
+  member:
+    fileName: default.png
+    path: member
+  post:
+    path: post
